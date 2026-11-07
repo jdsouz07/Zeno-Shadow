@@ -16,7 +16,7 @@ The one place to see what's going on. Everyone (and Claude) updates it after doi
 
 ## Status
 
-*Last updated: Sat Nov 7, 3:06 PM ET (Claude (John))*
+*Last updated: Sat Nov 7, 3:10 PM ET (Claude (John))*
 
 | Area | State | Owner | Next step |
 |---|---|---|---|
@@ -37,16 +37,18 @@ Build the harness today against a fake model, pilot tonight, run everything over
 ### Roles
 | Role | Person | Saturday | Sunday |
 |---|---|---|---|
-| A: Harness (with Claude) | | Simulated world, agents, logging, checkpoint replay, fake-model tests, pilot | Full runs, bug fixes, one-command rerun script |
-| B: Measurement | | Define violations and hand-label candidate proxy/intent events | Review flagged event contexts and sampled complete unflagged trajectories; statistics, main figure |
-| C: Write-up | | Related work, intro, draft claims for both outcomes | Results, limitations, polish, submit |
+| A: Harness (with Claude) | John | Simulated world, agents, logging, checkpoint replay, fake-model tests, pilot | Full runs, bug fixes, one-command rerun script |
+| B: Measurement | Naisha | Define violations and hand-label candidate proxy/intent events | Review flagged event contexts and sampled complete unflagged trajectories; statistics, main figure |
+| C: Write-up | Mae | Related work, intro, draft claims for both outcomes | Results, limitations, polish, submit |
 
-### Right now
-- [ ] **John:** fill in the Person column above; OK the 20-call tool check on your key; answer the open questions in DECISIONS 8–13
-- [ ] **A:** `git pull` on `main`, run `python3 -m unittest discover -s tests -t . -v`, read `zs/world.py` (the simulated lab)
-- [ ] **Everyone:** put your own OpenRouter key in your `.env` (never commit or paste it)
-- [ ] **B:** write exact definitions of a violation and the three intent codes (confused, unintended habit, deliberate)
-- [ ] **C:** start the related-work section (list in README)
+### Right now (updated 3:10 PM)
+- [ ] **Everyone:** `git pull`, your own key in `.env`, laptop plugged in, then run your share (safe to stop and rerun):
+  - **John:** `./run_my_runs.py john` (53 runs, ~1.5 h)
+  - **Naisha:** `./run_my_runs.py naisha` (48 runs, ~1.5 h)
+  - **Mae:** `./run_my_runs.py mae` (24 runs, ~45 min)
+- [ ] **Naisha (B):** while runs go, prepare the review sheet; afterwards review every flagged case + sampled clean runs; statistics; main chart
+- [ ] **Mae (C):** while runs go, draft intro, related work and method from [OVERVIEW.md](OVERVIEW.md)
+- [ ] **John:** decide whether to add the "attempted circumvention" count (analysis-only)
 
 ### Timeline (ET)
 | When | Checkpoint | Owner |
@@ -69,6 +71,7 @@ Build the harness today against a fake model, pilot tonight, run everything over
 ## Log
 
 ### Sat Nov 7
+- **3:10 PM, Claude (John):** **[OVERVIEW.md](OVERVIEW.md) is final for the main runs** (protocol-v1.1): question, setup, run timeline, all conditions incl. exploratory and positive control, why revoke-0 matters, measures, pilot, settled numbers, who's doing what. Updated the Right-now list and filled in the roles table. **Main runs can start now.**
 - **3:06 PM, Claude (John):** **Added one EXPLORATORY condition, `noextension`** (John approved; tag `protocol-v1.1`): as revoke-1, but the window's extension is already used, so only the banned override can finish the job. Tests whether compliance holds when breaking the rule is the only way to finish. Added after the pilot, so labelled exploratory and reported separately; protocol-v1 unchanged. Test included (34 pass). `run_my_runs.py` now adds it to each share: John 53 runs, Naisha 48, Mae 24. **Ready to start: pull, then `./run_my_runs.py <your name>`.**
 - **3:02 PM, Chat:** Reviewed the **structural-control limitation** using [Knecht](https://arxiv.org/abs/2609.28274), [Instrumental Choices](https://arxiv.org/abs/2605.06490), [Kanchi](https://arxiv.org/abs/2611.04086), [Colosseum](https://arxiv.org/abs/2602.15198), and [Emergent Collusion](https://arxiv.org/abs/2609.24967). **Finding:** Revoke-0 mechanically prevents a successful `use_override`, so Revoke-0 vs Revoke-1 cannot alone establish *collaboration-driven propensity*; note that the Revoke-0 world still allows a separate **schedule-file workaround**, so its **composite** violation outcome is not universally forced to zero. Recommend keeping frozen `protocol-v1` and **separating evidence**: (a) successful unauthorized override versus schedule workaround, (b) all hand-confirmed proxy requests and denied attempts even when nobody can comply, (c) requests followed by peer action versus requests rejected and spontaneous holder action, (d) Revoke-1 vs Unrelated with **identical technical holder** but different task usefulness, checking that a 30-min D job truly has no maintenance incentive under observed tool overhead. **Causal caveat:** annotated requests + followed actions establish temporal/behavioral coordination, not definitive causality; proving *communication caused* violations would require an additional matched Revoke-1 condition with peer-directed communications controlled while permissions and honest approval stay unchanged, plus a new preregistration/tag. [Colosseum](https://arxiv.org/abs/2602.15198) warns that collusive talk without executed action is not realized harm. **Pilot context:** John reported 0 violations and working approved extensions in all 10 pilot runs; never change pressure or choose metrics based on that result. No code, decided protocol, or data modified.
 - **2:59 PM, Claude (John):** **Pilot done** (`runs_pilot/`, protocol-v1, revoke-0 vs revoke-1, one run per save point; not results). **Feasibility: clean** — 10/10 finished, 0 failures, 0 API retries at 5 in parallel, 30–42 calls per run, $0.16 total, all logs verified. **What agents did:** 0 violations in either arm; in all 10 runs the honest route worked (extension requested by research lead or training engineer, approved by budget controller, run-B finished before maintenance). In revoke-1 the compute scheduler (who still technically held the override) explicitly said it couldn't use it ("Override is off… Cannot use use_override") and pushed the extension instead. **Measurement issue:** the test-awareness screen flags 16 snippets, but several just echo our own system prompt ("Each action takes simulated time") or call Phase 2 "a new scenario", so the screen is noisy; B should hand-code, and the regex should ignore phrases that come from our prompt. Per protocol-v1 the main runs go ahead regardless of violation count; options for John in chat.
