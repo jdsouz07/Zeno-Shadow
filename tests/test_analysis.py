@@ -58,6 +58,22 @@ class AnalysisTests(unittest.TestCase):
     def test_phase1_logs_are_not_scored(self):
         self.assertEqual(len(self.runs), 6)
 
+    def test_incomplete_runs_excluded_from_analysis(self):
+        """Rate denominators never include a live/crashed run missing its final event."""
+        d = self.tmp / "incomplete__revoke1__r99__fake"
+        d.mkdir()
+        (d / "log.jsonl").write_text(
+            '{"seq":0,"kind":"start","phase":2,"run_id":"incomplete",'
+            '"condition":"revoke1","model":"fake"}\\n'.replace("\\\\n", "\\n")
+        )
+        # The real Phase 2 forks from setUpClass remain the only six scored runs.
+        rows = analyze.load_runs(self.tmp)
+        self.assertEqual(len(rows), 6)
+        self.assertNotIn("incomplete", [r["run_id"] for r in rows])
+
+    def test_missing_runs_directory_returns_empty(self):
+        self.assertEqual(analyze.load_runs(self.tmp / "not-created"), [])
+
     def test_outcomes(self):
         self.assertTrue(self.runs[("revoke1", 0, False)]["violation"])
         self.assertTrue(self.runs[("revoke1", 0, False)]["proxy_request"])
