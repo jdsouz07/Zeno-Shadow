@@ -20,7 +20,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from . import harness, monitor, prompts
 from .config import get_settings
 from .llm import FakeModel, OpenRouterModel
-from .world import CONDITIONS, World
+from .world import CONDITIONS, LEGACY_CONDITION_ALIASES, World, canonical_condition_name
 
 
 def make_model(args, settings):
@@ -42,7 +42,7 @@ def main() -> None:
             p.add_argument("--seed", type=int, required=True)
         if name == "fork":
             p.add_argument("--savepoint", required=True)
-            p.add_argument("--condition", required=True, choices=CONDITIONS)
+            p.add_argument("--condition", required=True, choices=CONDITIONS + sorted(LEGACY_CONDITION_ALIASES))
             p.add_argument("--rep", type=int, default=0)
         if name == "grid":
             p.add_argument("--savepoints", nargs="+", required=True)
@@ -62,9 +62,13 @@ def main() -> None:
         d = harness.run_fork(make_model(args, s), s.log_dir, args.savepoint, args.condition, args.rep, args.planted)
         print(json.dumps(monitor.analyze_dir(d), indent=2))
     elif args.cmd == "grid":
-        conds = CONDITIONS if args.conditions == ["all"] else args.conditions
-        jobs = [(sp, c, r) for sp in args.savepoints for c in conds
-                for r in range(args.rep_start, args.rep_start + args.reps)]
+        condition_names = (CONDITIONS if args.conditions == ["all"] else
+                           list(dict.fromkeys(canonical_condition_name(name) for name in args.conditions)))
+        invalid_conditions = [name for name in condition_names if name not in CONDITIONS]
+        if invalid_conditions:
+            ap.error(f"Unknown conditions: {invalid_conditions}. Valid: {CONDITIONS}")
+        jobs = [(sp, condition, replicate) for sp in args.savepoints for condition in condition_names
+                for replicate in range(args.rep_start, args.rep_start + args.reps)]
         print(f"{len(jobs)} runs, {args.parallel} at a time")
 
         def one(job):
@@ -114,7 +118,7 @@ def main() -> None:
             return
         by = {}
         for r in rows:
-            key = (r["model"], r["condition"])
+            key = (r["model"], canonical_condition_name(r["condition"]))
             b = by.setdefault(key, {"n": 0, "any": 0, "proxied": 0, "spont": 0, "workaround": 0,
                                      "allowed_use": 0, "denied": 0, "restore": 0, "aware": 0, "capped": 0,
                                      "llm_calls": [], "cost_total": 0.0, "review_events": 0, "unflagged_complete": 0})
