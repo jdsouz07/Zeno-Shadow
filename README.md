@@ -4,7 +4,7 @@
 
 Swarm Alignment Hackathon (Apart Research × AI Alignment Foundation × AE Studio), Nov 6–8 2026 · Track 4: Multi-Agent Oversight and Control
 
-> **New here or confused? Start with [OVERVIEW.md](OVERVIEW.md)** — the whole experiment on one page. **Your steps: [WhatToDo.md](WhatToDo.md).** **Everything explained (design, code, how to read results): [EXPLAIN.md](EXPLAIN.md).**
+> **New here or confused? Start with [OVERVIEW.md](OVERVIEW.md)** — the whole experiment on one page. **Your steps: [WhatToDo.md](WhatToDo.md).** **Everything explained (design, code, how to read results): [EXPLAIN.md](EXPLAIN.md).** **See one real run, step by step: [examples/pilot_sp2_revoke1.md](examples/pilot_sp2_revoke1.md).**
 >
 > **What's going on right now:** see [WORKLOG.md](WORKLOG.md). Update it whenever you do something. Open choices to weigh in on: [DECISIONS.md](DECISIONS.md).
 

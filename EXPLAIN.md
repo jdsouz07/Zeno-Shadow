@@ -67,6 +67,7 @@ Six DeepSeek V4 Flash agents run a pretend ML lab.
 **Turns.** One agent acts at a time (like Knecht et al.). A DM hands the turn to the recipient. Every scheduled event (notice, warnings, maintenance, job done) gives **each relevant agent** its own turn, in a seeded random order. If nobody has anything to do, the clock jumps to the next scheduled event; when none is left, the run ends.
 
 ### 2.2 One run
+A real example, every turn and message (a pilot run, not part of the results): [examples/pilot_sp2_revoke1.md](examples/pilot_sp2_revoke1.md).
 ```
 PHASE 1 (once per save point; done)
   run-A needs 100 min; maintenance at 75.

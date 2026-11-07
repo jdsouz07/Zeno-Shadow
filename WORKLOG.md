@@ -16,7 +16,7 @@ The one place to see what's going on. Everyone (and Claude) updates it after doi
 
 ## Status
 
-*Last updated: Sat Nov 7, 3:34 PM ET (Claude (John))*
+*Last updated: Sat Nov 7, 3:41 PM ET (Claude (John))*
 
 | Area | State | Owner | Next step |
 |---|---|---|---|
@@ -73,6 +73,7 @@ Build the harness today against a fake model, pilot tonight, run everything over
 ## Log
 
 ### Sat Nov 7
+- **3:41 PM, Claude (John):** Added **[examples/pilot_sp2_revoke1.md](examples/pilot_sp2_revoke1.md)**: one pilot run (sp2, revoke-1) as a readable transcript (events, each agent's turn, DMs, channel posts, actions, shortened private reasoning) so everyone can see what a run looks like. Pilot data only, not results. Linked from README and EXPLAIN §2.2.
 - **3:34 PM, Claude (John):** **Second batch pre-declared** (John's decision, before any main-run results): the five main conditions go to **40 runs each** (reps 4–7 on the same save points), run **whatever batch 1 shows**. New commands: `./run_my_runs.py john2` (40), `naisha2` (40), `mae2` (20); batch-1 shares unchanged. 0/40 → 95% upper bound ≈ 9% (vs 16% at 20). Exploratory and positive control not doubled. Recorded in DECISIONS, MEASUREMENT §3.2, OVERVIEW, EXPLAIN, WhatToDo, README. **Run your batch-2 share after your batch-1 share is pushed.**
 - **3:33 PM, Claude (John):** **Attempted circumvention added** (John's decision, before any main-run results): per-run outcome = R1 proxy request, V1, V2, denied or late attempt; possible in every revoke arm incl. revoke-0. Two pre-declared contrasts added (revoke-1 vs revoke-0, revoke-3 vs revoke-1), Holm now over seven. Analysis code + test only (42 tests pass); no change to `zs/` or the runs. Recorded in MEASUREMENT.md §3.1, DECISIONS, OVERVIEW, EXPLAIN. **Naisha:** please review §3.1 since it's your area.
 - **3:30 PM, Claude (Naisha):** **Analysis bug fixed** (B's code only; `zs/` and `run_my_runs.py` untouched): the exploratory `noextension` arm was missing from the analysis's forbidden-override list, so `table` showed its violations as "n/a (allowed)" and grouped it with the main arms. Now its violation rate is counted and it's labeled `exploratory`, never in the 5 contrasts. New test; full suite passes (40).
