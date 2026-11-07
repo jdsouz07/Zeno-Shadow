@@ -16,12 +16,12 @@ Full design: [README](README.md) · Open choices: [DECISIONS.md](DECISIONS.md) �
 
 ## Status
 
-*Last updated: Sat Nov 7, 1:09 PM ET (Claude (John))*
+*Last updated: Sat Nov 7, 1:11 PM ET (Claude (John))*
 
 | Area | State | Owner | Next step |
 |---|---|---|---|
 | Design | Merged design adopted (training job + maintenance window, 6 roles, 7 conditions) | Team | — |
-| Harness | **Built** on branch [`harness`](https://github.com/jdsouz07/Zeno-Shadow/tree/harness); 13 fake-model tests pass; **real-API tool check 20/20 valid** | A + Claude (John) | Phase 1 save points, then the pilot |
+| Harness | **Built and merged into `main`** (`zs/`, `tests/`); 13 fake-model tests pass; **real-API tool check 20/20 valid** | A + Claude (John) | Phase 1 save points, then the pilot |
 | OpenRouter credits | **Received:** 3 keys, one per person, $50 each = $150 total. John's key verified: $50 limit, ~$0.003 used. | Everyone | Put your key in your own `.env` (never commit or paste it); Claude will check John's key's limit |
 | Measurement | Not started | B | Write exact definitions of a violation and the three intent codes |
 | Write-up | Not started | C | Related-work section (list in README) |
@@ -43,7 +43,7 @@ Build the harness today against a fake model, pilot tonight, run everything over
 
 ### Right now
 - [ ] **John:** fill in the Person column above; OK the 20-call tool check on your key; answer the open questions in DECISIONS 8–13
-- [ ] **A:** `git fetch && git switch harness`, run `python3 -m unittest discover -s tests -t . -v`, read `zs/world.py` (the simulated lab)
+- [ ] **A:** `git pull` on `main`, run `python3 -m unittest discover -s tests -t . -v`, read `zs/world.py` (the simulated lab)
 - [ ] **Everyone:** put your own OpenRouter key in your `.env` (never commit or paste it)
 - [ ] **B:** write exact definitions of a violation and the three intent codes (confused, unintended habit, deliberate)
 - [ ] **C:** start the related-work section (list in README)
@@ -68,6 +68,7 @@ Build the harness today against a fake model, pilot tonight, run everything over
 ## Log
 
 ### Sat Nov 7
+- **1:11 PM, Claude (John):** **Merged the harness into `main`** (merge commit ec8c5f4): `zs/` and `tests/` are now on main, with the SSL fix. 13 tests pass on main. Work from `main` from now on; the `harness` branch is kept but no longer needed. Run instructions: README → Running the harness.
 - **1:09 PM, Claude (John):** Real-API tool check on John's key: **20/20 valid tool calls** on V4 Flash via DeepInfra (provider pin works), reasoning returned on every call (500–5,800 chars), ~$0.00015 per call, total $0.003. Calls are slow: ~15 s each, so plan on ~15 s × calls per run when estimating run time. Fixed an SSL certificate error on macOS Python (harness commit 0946220); if you hit `CERTIFICATE_VERIFY_FAILED`, pull the `harness` branch. John also started a read-only Q&A helper session for his questions.
 - **1:06 PM, Claude (Naisha):** Correction to the ~12:33 PM entry: per Naisha, this session no longer logs every prompt. It logs and commits only after pushing code or when there's something important for the team, so no entry doesn't mean no activity.
 - **1:02 PM, Claude (Naisha):** Naisha asked to rerun the first task. Pulled: the 12:57 entries were already pushed, so nothing was re-added. Rechecked the flags against main and the `harness` branch → still open: undated V3.2 slug + fp4 provider (also hard-coded as defaults in `zs/config.py`) and "A" meaning both a role and an agent (README, DECISIONS 4). "Right now" and the logging rule are fixed. Reported to Naisha.
