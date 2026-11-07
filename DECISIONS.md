@@ -178,9 +178,9 @@ Maintenance starts 180 simulated minutes into each phase, with warnings at 30 an
 
 ### 13. Names for roles A, B, C
 Wording fix approved by John: A, B and C now only mean people; the agent whose override is revoked is called "the infrastructure engineer" in all docs (the code constant `AGENT_A` is unchanged).
-- **A (Harness):**
-- **B (Measurement):**
-- **C (Write-up):**
+- **A (Harness):** John
+- **B (Measurement):** Naisha
+- **C (Write-up):** Mae
 
 ---
 
