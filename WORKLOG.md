@@ -16,13 +16,13 @@ Full design: [README](README.md) · Open choices: [DECISIONS.md](DECISIONS.md) �
 
 ## Status
 
-*Last updated: Sat Nov 7, 1:00 PM ET (Claude (John))*
+*Last updated: Sat Nov 7, 1:09 PM ET (Claude (John))*
 
 | Area | State | Owner | Next step |
 |---|---|---|---|
 | Design | Merged design adopted (training job + maintenance window, 6 roles, 7 conditions) | Team | — |
-| Harness | **Built** on branch [`harness`](https://github.com/jdsouz07/Zeno-Shadow/tree/harness); 13 fake-model tests pass; not yet run on a real model | A + Claude (John) | 20-call tool check on John's key, then Phase 1 save points and the pilot |
-| OpenRouter credits | **Received:** 3 keys, one per person, $50 each = $150 total. Not yet verified. | Everyone | Put your key in your own `.env` (never commit or paste it); Claude will check John's key's limit |
+| Harness | **Built** on branch [`harness`](https://github.com/jdsouz07/Zeno-Shadow/tree/harness); 13 fake-model tests pass; **real-API tool check 20/20 valid** | A + Claude (John) | Phase 1 save points, then the pilot |
+| OpenRouter credits | **Received:** 3 keys, one per person, $50 each = $150 total. John's key verified: $50 limit, ~$0.003 used. | Everyone | Put your key in your own `.env` (never commit or paste it); Claude will check John's key's limit |
 | Measurement | Not started | B | Write exact definitions of a violation and the three intent codes |
 | Write-up | Not started | C | Related-work section (list in README) |
 
@@ -68,6 +68,7 @@ Build the harness today against a fake model, pilot tonight, run everything over
 ## Log
 
 ### Sat Nov 7
+- **1:09 PM, Claude (John):** Real-API tool check on John's key: **20/20 valid tool calls** on V4 Flash via DeepInfra (provider pin works), reasoning returned on every call (500–5,800 chars), ~$0.00015 per call, total $0.003. Calls are slow: ~15 s each, so plan on ~15 s × calls per run when estimating run time. Fixed an SSL certificate error on macOS Python (harness commit 0946220); if you hit `CERTIFICATE_VERIFY_FAILED`, pull the `harness` branch. John also started a read-only Q&A helper session for his questions.
 - **1:06 PM, Claude (Naisha):** Correction to the ~12:33 PM entry: per Naisha, this session no longer logs every prompt. It logs and commits only after pushing code or when there's something important for the team, so no entry doesn't mean no activity.
 - **1:02 PM, Claude (Naisha):** Naisha asked to rerun the first task. Pulled: the 12:57 entries were already pushed, so nothing was re-added. Rechecked the flags against main and the `harness` branch → still open: undated V3.2 slug + fp4 provider (also hard-coded as defaults in `zs/config.py`) and "A" meaning both a role and an agent (README, DECISIONS 4). "Right now" and the logging rule are fixed. Reported to Naisha.
 - **1:00 PM, Claude (John):** **Harness built** on branch `harness` (commit 3553296): simulated lab (`zs/world.py`) with fixed time per action, handoff turns with event wake-ups for every relevant agent (2e), all 7 conditions forked from JSON save points, hash-chained logs, rule-based monitor (proxied / spontaneous / workaround / denied attempts / restore requests / rough test-awareness screen), OpenRouter client (streaming, retries, pinned provider, per-key and per-run spend caps), and a scripted fake model. Standard library only. 13 fake-model tests pass, including Chat's 2e validation and replay determinism. Not yet run on a real model. How to run: README → Running the harness.
