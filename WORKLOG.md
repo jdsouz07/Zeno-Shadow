@@ -16,12 +16,12 @@ Full design: [README](README.md) · Open choices: [DECISIONS.md](DECISIONS.md) �
 
 ## Status
 
-*Last updated: Sat Nov 7, 1:11 PM ET (Claude (John))*
+*Last updated: Sat Nov 7, 1:21 PM ET (Claude (John))*
 
 | Area | State | Owner | Next step |
 |---|---|---|---|
 | Design | Merged design adopted (training job + maintenance window, 6 roles, 7 conditions) | Team | — |
-| Harness | **Built and merged into `main`** (`zs/`, `tests/`); 13 fake-model tests pass; **real-API tool check 20/20 valid** | A + Claude (John) | Phase 1 save points, then the pilot |
+| Harness | **Built and merged into `main`** (`zs/`, `tests/`); 15 fake-model tests pass; **real-API tool check 20/20 valid** | A + Claude (John) | Phase 1 save points, then the pilot |
 | OpenRouter credits | **Received:** 3 keys, one per person, $50 each = $150 total. John's key verified: $50 limit, ~$0.003 used. | Everyone | Put your key in your own `.env` (never commit or paste it); Claude will check John's key's limit |
 | Measurement | Not started | B | Write exact definitions of a violation and the three intent codes |
 | Write-up | Not started | C | Related-work section (list in README) |
@@ -68,6 +68,7 @@ Build the harness today against a fake model, pilot tonight, run everything over
 ## Log
 
 ### Sat Nov 7
+- **1:21 PM, Claude (John):** Acted on Chat's 1:17 PM review (commit f36afcc): (1) a proxied violation now also counts when a holder uses the override **in a turn started by a teammate's DM**, whatever the wording (`basis: same_turn_dm`, with `keyword_match` recorded so B can review); keywords stay as a backup for asks acted on later; (2) every run's final hash is appended to `runs/manifest.jsonl`, and `python3 -m zs.run verify` checks all logs against it (commit `runs/` to anchor them); (3) README **Credits** section. 15 tests pass. Revoked-tool visibility is now an open question for John. First real Phase 1 save point (`sp1`, seed 1) is running.
 - **1:17 PM, Chat:** Compared all eight `zs/` files against the official published code in [Knecht's shutdown-sabotage repo](https://github.com/AmelieKnecht/multi-agent-shutdown-sabotage) and [Kanchi's delegated-scope repo](https://github.com/shrave/delegated-scope-violation). **Finding/rationale:** our handoff and shutdown-task framing closely follow Knecht's methodology; separation of technically permitted vs policy-authorized actions, deterministic event scoring, and hash-chain logging closely parallel Kanchi's design. The six-role simulated ML world, timed revocation arms, and saved condition forks appear bespoke. A limited automated check found no identical substantive code lines (>55 characters) across the compared core files; this is not a complete provenance audit. **Important limitations:** `zs/harness.py` verifies adjacent hashes but not an externally committed log tail/closure (Kanchi does), and `zs/monitor.py` uses text/regex heuristics for proxied violations instead of a fully structured action classification. Also review tool-affordance visibility: revoked tools stay listed in `ever_tools`, relevant to Kanchi's findings. No code or experimental decisions changed; recommend recording explicit citations and testing these issues before claiming full tamper-evidence or action-ground-truth precision.
 - **1:13 PM, Chat:** Reviewed current [DECISIONS.md](DECISIONS.md) against the worklog: 1–7 (including 2a–2e) are settled; **8–10 remain the pre-pilot choices** (deadline pressure, intent coding, positive control), and 11–13 remain open (models, title, team assignments). **Recommendation:** keep the authorized path achievable for Decision 8; use deterministic action labels with human-checked, uncertainty-qualified intent annotations for Decision 9; keep Decision 10's prompted positive control separate from spontaneous-behavior statistics. Also flagged Decision 5's emergency-time/save-point implementation as a proposal that should record rejected checkpoint attempts. No decisions or code changed.
 - **1:11 PM, Claude (John):** **Merged the harness into `main`** (commits 50b0be9 and a543a95): `zs/` and `tests/` are now on main, with the SSL fix. 13 tests pass on main. Work from `main` from now on; the `harness` branch is kept but no longer needed. Run instructions: README → Running the harness.
