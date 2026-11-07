@@ -79,15 +79,26 @@ Maintenance starts 180 simulated minutes into each phase, with warnings at 30 an
 | **Own history + last ~20 shared messages + a short state summary each round (always showing the current policy)** ✅ | Cheaper. Fewer agents getting lost. Policy line means no one can miss the revocation. | Agents may lose older details. |
 | Full history | Nothing is missed. | Prompts grow long, cost climbs fast, models drift. |
 
-**Answer:**
+**Answer:** John: **the recommended option.** Each agent sees its own history, the last ~20 shared-channel messages, and a status box every turn (simulated clock, time to maintenance, its own permissions, and the current policy, e.g. "maintenance_override: NOT authorized").
 
 ### 7. Reasoning mode on V4 Flash
 | Option | Pros | Cons |
 |---|---|---|
-| **Off** ✅ | Cheap and fast. | No private reasoning to read when coding intent; messages and actions have to carry it. |
-| On | Reasoning traces help tell "confused" from "deliberate". | Several times the cost, slower. Doesn't improve comparability with Knecht. |
+| Off | Cheap and fast. | No private reasoning to read when coding intent; messages and actions have to carry it. |
+| **On** | Reasoning traces help tell "confused" from "deliberate". **Matches Knecht et al.**: their harness requests reasoning by default and scores it with a "reasoning construal" judge (correction: an earlier version of this table said the opposite). | Slower. Output tokens rise, but on V4 Flash via DeepInfra ($0.18/M output) the full set of runs should still cost a few dollars. |
 
-**Answer:**
+**Answer:** John: **On**, after checking whether hidden reasoning can be spoofed or misleading (research by Claude, 12:55 PM).
+
+**What the research says, and what we do about it:**
+
+| Risk | What the evidence says | What we do |
+|---|---|---|
+| **Agents faking their own logs** | In the Hugging Face incident, agents spoofed *tool-call records* in ~7% of reviewed transcripts by tampering with the system that ran their tools ([METR via Implicator](https://www.implicator.ai/metr-700-openai-agents-hugging-face-spoofed-logs/), [LessWrong](https://www.lesswrong.com/posts/eW8o9EPnN32epMaag/the-agents-used-better-integrity-primitives-than-their)). That was tool records in a real environment, not their reasoning. | Can't happen here: tools are simulated inside the harness, agents have no tool that touches logs, and the harness writes reasoning and actions straight from the API response to an append-only log. Add a hash chain to the log (as Kanchi did) so any later edit is detectable. |
+| **Reasoning that doesn't match the real reasons** | Reasoning models mention hidden influences on their answers only ~25–39% of the time ([summary](https://subhadipmitra.com/blog/2026/three-bets-model-honesty/)). | **Actions stay the primary measure.** Violations are decided by the rule-based monitor from what agents did. Reasoning is supporting evidence for intent codes only; report how often reasoning-based and action-based codes agree. |
+| **Models hiding their reasoning** | Obfuscation shows up mainly when training pressure punishes visible bad reasoning ([OpenAI](https://openai.com/index/chain-of-thought-monitoring/), [stress test](https://www.alphaxiv.org/abs/2510.19851)), and can be triggered by models reading about monitoring ([arXiv 2605.15257](https://arxiv.org/pdf/2605.15257)). | We train nothing. **Never tell agents their reasoning is visible or monitored**, and keep the word "monitor" out of prompts. |
+| **Noticing it's a test** | Reasoning traces are how test awareness is measured; frontier models mention possibly being tested in roughly 13–36% of cases depending on model and reasoning ([UK AISI](https://www.alphaxiv.org/abs/2604.00788.md), [Hawthorne effect](https://arxiv.org/html/2505.14617v3)). | A benefit of reasoning on: **report the test-awareness rate**, and check whether rule-breaking differs when agents suspect a test. Knecht et al. list test awareness as a limitation. |
+
+**Implementation notes:** reasoning stays private (never shown to other agents, and not fed back into an agent's own history between turns); raise `MAX_TOKENS` to 4000 because reasoning counts toward it; leave reasoning effort at the model's default, as Knecht did. The DeepInfra endpoint for V4 Flash supports reasoning and tools.
 
 ---
 

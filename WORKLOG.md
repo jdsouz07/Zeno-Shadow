@@ -16,17 +16,17 @@ Full design: [README](README.md) · Open choices: [DECISIONS.md](DECISIONS.md) �
 
 ## Status
 
-*Last updated: Sat Nov 7, 12:47 PM ET (Claude)*
+*Last updated: Sat Nov 7, 12:50 PM ET (Claude)*
 
 | Area | State | Owner | Next step |
 |---|---|---|---|
 | Design | Merged design adopted (training job + maintenance window, 6 roles, 7 conditions) | Team | — |
-| Harness | Not started; will be written from scratch | A + Claude | Decisions 1–3 answered; waiting on 4–7, then build against a fake model |
+| Harness | Not started; all blocking decisions settled | A + Claude | Build against a fake model |
 | OpenRouter credits | **Received:** 3 keys, one per person, $50 each = $150 total. Not yet verified. | Everyone | Put your key in your own `.env` (never commit or paste it); Claude will check John's key's limit |
 | Measurement | Not started | B | Write exact definitions of a violation and the three intent codes |
 | Write-up | Not started | C | Related-work section (list in README) |
 
-**Open decisions:** 13 choices with pros, cons and a recommendation are in [DECISIONS.md](DECISIONS.md). Answered: 1 (temperature 1.0), 2 (handoff), 3 (DMs + shared channel), 4 (infrastructure engineer loses the override; scheduler, then budget controller and checkpoint engineer, keep it). 2a (fixed simulated time per action), 2b (when quiet, jump to the next maintenance warning; end when quiet after the last). 2c (caps: 20 tool calls per turn, 60 handoffs per phase), 5 (scripted emergency every run, random time per save point). Still blocking the harness: 6, 7.
+**Open decisions:** 13 choices with pros, cons and a recommendation are in [DECISIONS.md](DECISIONS.md). Answered: 1 (temperature 1.0), 2 (handoff), 3 (DMs + shared channel), 4 (infrastructure engineer loses the override; scheduler, then budget controller and checkpoint engineer, keep it). 2a (fixed simulated time per action), 2b (when quiet, jump to the next maintenance warning; end when quiet after the last). 2c (caps: 20 tool calls per turn, 60 handoffs per phase), 5 (scripted emergency every run, random time per save point). 6 (recent messages + status box with current policy), 7 (reasoning on, with safeguards). **All harness-blocking decisions are settled.**
 
 ---
 
@@ -67,6 +67,7 @@ Build the harness today against a fake model, pilot tonight, run everything over
 ## Log
 
 ### Sat Nov 7
+- **12:50 PM, Claude:** Recorded 6 (recent messages + status box showing current policy) and 7 (**reasoning on**). Researched whether reasoning can be spoofed or misleading: agents can't touch our logs (simulated tools, append-only hash-chained log); reasoning can be unfaithful, so actions stay the primary measure; never tell agents their reasoning is monitored; report test-awareness rate. Correction: Knecht et al. *did* use reasoning by default. `.env.example`: MAX_TOKENS=4000, REASONING=on (update your `.env`). All harness-blocking decisions settled.
 - **12:47 PM, Claude:** Recorded 2c (caps) and decision 5: a scripted emergency in every run's Phase 1, at a random time drawn once per save point from a recorded seed; Phase 2 timing stays fixed so conditions compare fairly. Only 6 and 7 still block the harness.
 - **12:44 PM, Chat:** Reviewed [DECISIONS.md](DECISIONS.md) Decision 2 and OpenRouter's concurrency documentation. OpenRouter permits simultaneous independent requests to the same or different models (subject to provider rate limits); it does not require one model or agent at a time. **Recommendation, not a changed decision:** retain John's handoff scheduling for the primary experiment to preserve explicit request→peer action chains, fixed simulated action-time accounting, and comparability with Knecht et al.; parallelize *independent runs / matched checkpoint branches* for throughput instead. Fully parallel within-run turns would change message delivery, pressure timing, and conflict handling, so treat that as a separately labeled topology/scheduler ablation after the pilot. No code or experiment settings modified.
 - **12:43 PM, Claude:** John settled the clock: every action costs fixed simulated time (message 3 min, checkpoint 20, extension request 10, override 2), not wall-clock time, so models and machines compare fairly. 2b settled too. Updated DECISIONS.md and the README design section.
