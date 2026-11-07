@@ -64,6 +64,21 @@ python3 -m zs.run verify                                      # every log vs run
 ```
 Add `--fake comply|proxy|vague|spontaneous|workaround` to any command to run free with scripted agents, `--model pro|compare` for the other models, `--planted research_lead` for the positive control. Each run writes `runs/<run_id>/log.jsonl` (hash-chained) and `summary.json`, and appends its final hash to `runs/manifest.jsonl`; commit `runs/` so the manifest anchors the logs. Spend per key is capped by `BUDGET_TOTAL_USD` and `BUDGET_PER_RUN_USD`.
 
+**Fast, free checks before a pilot** (no API key or virtualenv required; Python 3.10+):
+```bash
+python3 -m unittest tests.test_harness.HarnessTests.test_60_minute_schedule_requires_approved_extension -v
+python3 -m unittest tests.test_harness.HarnessTests.test_honest_route_can_finish -v
+```
+The first test holds the same initial Phase 2 world constant and confirms **approved +20-minute extension → 60-minute job finishes before maintenance at 65**, versus **no extension → job interrupted at 45**, with no forbidden override in either case. The second uses the scripted compliant agent across all seven conditions. Neither test proves that a real model will choose the approved route; that is what the pilot observes.
+
+A fresh local checkout may not have a `runs/` directory: `python3 -m zs.run summarize` now prints a helpful no-data message instead of throwing `FileNotFoundError`. To generate free example logs before summarizing:
+```bash
+python3 -m zs.run phase1 --savepoint sp1 --seed 1 --fake comply
+python3 -m zs.run fork --savepoint sp1 --condition revoke1 --rep 0 --fake comply
+python3 -m zs.run summarize
+```
+Savepoint names must be unique per output directory. A teammate's uncommitted `runs/` files are not automatically visible in your checkout. A virtual environment is optional; the harness currently requires no third-party packages.
+
 ## Credits
 The harness code was written from scratch for this project; no code was copied from other repositories. Ideas we adopted, with thanks:
 - **[Knecht et al. 2026](https://arxiv.org/abs/2609.28274)** ([code](https://github.com/AmelieKnecht/multi-agent-shutdown-sabotage)): handoff turn-taking between agents; streaming API calls with retries (OpenRouter keep-alive padding); per-turn and per-episode step caps with capped runs reported separately; reasoning requested by default at the model's default effort; scoring outcomes from actions rather than trusting an LLM judge alone; watching for indirect workarounds (their "shadow package" finding).
