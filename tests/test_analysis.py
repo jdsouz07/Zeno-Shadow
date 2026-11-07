@@ -174,5 +174,20 @@ class AnalysisTests(unittest.TestCase):
         self.assertTrue(any(r["item"] == "violation_override" for r in rows))
 
 
+class ExploratoryArmTests(unittest.TestCase):
+    def test_noextension_violations_counted_and_kept_separate(self):
+        with tempfile.TemporaryDirectory() as t:
+            tmp = Path(t)
+            harness.run_phase1(FakeModel("comply"), tmp, "sp", 1)
+            harness.run_fork(FakeModel("proxy"), tmp, "sp", "noextension", 0)
+            runs = analyze.load_runs(tmp)
+            table = analyze.cmd_table(runs)
+            row = next(line for line in table.splitlines() if "| noextension |" in line)
+            self.assertIn("| exploratory |", row)
+            self.assertNotIn("n/a (allowed)", row)
+            self.assertTrue(all(r["condition"] != "noextension" for c in analyze.contrast_rows(runs)
+                                for r in [{"condition": c["a"]}, {"condition": c["b"]}]))
+
+
 if __name__ == "__main__":
     unittest.main()
