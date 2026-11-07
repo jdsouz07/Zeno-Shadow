@@ -10,13 +10,13 @@ The one place to see what's going on. Everyone (and Claude) updates it after doi
 
 **Claude** reads this file at the start of every prompt, and writes to it when John says "update" or when something happens the team needs to know. Its entries are tagged "Claude" and its commits start with `[Claude]`.
 
-Full design: [README](README.md) · Open choices: [DECISIONS.md](DECISIONS.md) · Team plan (roles, timeline): [Zeno-Shadow Team Plan](https://claude.ai/artifact/VqvMNPntNYo8DL1aP2uJyr) (ask John for access)
+Full design: [README](README.md) · Open choices: [DECISIONS.md](DECISIONS.md) · Roles, timeline and budget: **Plan** section below
 
 ---
 
 ## Status
 
-*Last updated: Sat Nov 7, 11:58 AM ET (Claude)*
+*Last updated: Sat Nov 7, 12:05 PM ET (Claude)*
 
 | Area | State | Owner | Next step |
 |---|---|---|---|
@@ -28,13 +28,46 @@ Full design: [README](README.md) · Open choices: [DECISIONS.md](DECISIONS.md) �
 
 **Open decisions:** 13 choices with pros, cons and a recommendation are in [DECISIONS.md](DECISIONS.md). Answered: 1 (temperature 1.0), 2 (handoff), 3 (DMs + shared channel). Still blocking the harness: 4–7, plus a look at the handoff follow-ups 2a–2c.
 
-**Deadlines (ET):** harness runs on fake model by Sat 6 PM · pilot decision Sat 9 PM · all runs done Sun 12 PM · stats final Sun 5 PM · submit Sun 10 PM · hard deadline Mon 6:59 AM (Sun 11:59 PM AoE)
+---
+
+## Plan
+
+Build the harness today against a fake model, pilot tonight, run everything overnight and Sunday morning, submit Sunday 10 PM ET. Hard deadline: Mon 6:59 AM ET (Sun 11:59 PM AoE).
+
+### Roles
+| Role | Person | Saturday | Sunday |
+|---|---|---|---|
+| A: Harness (with Claude) | | Simulated world, agents, logging, checkpoint replay, fake-model tests, pilot | Full runs, bug fixes, one-command rerun script |
+| B: Measurement | | Violation and intent definitions, proxy-request classifier | Hand-label ~50 messages, validate classifier, statistics, main figure |
+| C: Write-up | | Related work, intro, draft claims for both outcomes | Results, limitations, polish, submit |
+
+### Right now
+- [ ] **John:** answer DECISIONS 4–7 and 2a–2c (they block the harness); fill in the Person column above
+- [ ] **Everyone:** put your own OpenRouter key in your `.env` (never commit or paste it)
+- [ ] **B:** write exact definitions of a violation and the three intent codes (confused, unintended habit, deliberate)
+- [ ] **C:** start the related-work section (list in README)
+
+### Timeline (ET)
+| When | Checkpoint | Owner |
+|---|---|---|
+| Sat 6 PM | Harness runs end to end on a fake model | A |
+| Sat 9 PM | **Pilot decision:** sham vs "1 peer keeps it", 5 runs each. Violations → full runs start overnight. Zero → one pressure increase, then the null-result story | A, B |
+| Sun 12 PM | All runs done | A |
+| Sun 5 PM | Statistics and main figure final | B |
+| Sun 10 PM | Write-up submitted | C |
+| Mon 6:59 AM | Hard deadline | — |
+
+### Budget ($150: three $50 keys)
+- Full set of 7 conditions × 15 runs ≈ $2 on V4 Flash, ≈ $10–25 on V4 Pro or V3.2. Time limits us, not money.
+- Plan: every condition on all three DeepSeek models; one non-DeepSeek model on the key conditions; up to ~25 runs per condition on V4 Flash if time allows; keep ~$30 in reserve.
+- Each key is capped at $50. Proposed: split runs by person, each on their own machine and key, pushing logs to the repo. The harness records which key and machine made each call.
 
 ---
 
 ## Log
 
 ### Sat Nov 7
+- **12:05 PM, Claude:** Added a **Plan** section above (roles, right-now tasks, timeline, $150 budget plan), so the plan lives here in the repo, not only in the private plan doc.
 - **11:58 AM, Claude:** Credits arrived as one OpenRouter key per person ($50 each, $150 total), per John. Budget is 3x the plan; see chat/DECISIONS for how to use it.
 - **11:54 AM, Claude:** Recorded John's answers in DECISIONS.md: 1 = temperature 1.0 (set in `.env.example`; pull and update your own `.env`), 2 = handoff like Knecht, 3 = DMs + shared channel. Added handoff follow-ups 2a–2c with defaults (clock tick per handoff, who acts next, caps).
 - **11:49 AM, Claude:** New rule from John: Claude reads this worklog before every prompt and logs every prompt here; Claude's commits are prefixed `[Claude]`. Checked DECISIONS.md: no answers filled in yet.
