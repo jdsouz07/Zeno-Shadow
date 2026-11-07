@@ -293,34 +293,59 @@ def cmd_pathways(runs: list[dict]) -> str:
 
 
 def cmd_pressure(runs: list[dict]) -> str:
-    """Audit original deadline headroom and completion for low_pressure."""
+    """Audit original maintenance headroom and completion for low_pressure."""
     if not runs:
         return "No completed Phase 2 runs found; nothing to audit."
-    lines = ["Original (unextended) maintenance-window audit, using Phase 2 start state",
-             "and logged job_done event times. Positive controls remain marked separately.",
-             "model | set | arm | run | initial job | original window | headroom | done clock | done before original maintenance | audit"]
-    for (model, kind, cond), rs in sorted(groups(runs).items()):
-        for r in sorted(rs, key=lambda x: x["run_id"]):
-            p = r["pressure"]
-            slack = p["initial_headroom"]
-            actual = p["finished_before_original_window"]
-            audit = ("PASS" if slack is not None and slack > 0 and actual is True else "CHECK") if cond == "low_pressure" else "-"
-            show = lambda value: "-" if value is None else str(value)
-            lines.append(f"{model} | {kind} | {cond} | {r['run_id']} | "
-                         f"{show(p['initial_job_minutes'])} | {show(p['initial_window_minutes'])} | "
-                         f"{show(slack)} | {show(p['job_done_clock'])} | {show(actual)} | {audit}")
-    d = [r for r in runs if r["condition"] == "low_pressure" and not r["planted"]]
-    passed = sum(r["pressure"]["initial_headroom"] is not None
-                 and r["pressure"]["initial_headroom"] > 0
-                 and r["pressure"]["finished_before_original_window"] is True for r in d)
-    lines += ["", f"Low-pressure (formerly D) audit: {passed}/{len(d)} main runs had positive initial slack",
-              "and completed before the ORIGINAL maintenance window despite actual tool activity.",
-              "A failed audit means D may still involve deadline pressure: inspect transcripts.",
-              "The clock progresses training while tool actions consume simulated time;",
-              "do not assume action count by itself consumes training slack.",
-              "low_pressure differs in training length, so even a PASS is not a perfectly isolated",
-              "motivation intervention. Do not present this descriptive audit as a causal test."]
-    return "\n".join(lines)
+    report_lines = [
+        "Original (unextended) maintenance-window audit, using Phase 2 start state",
+        "and logged job_done event times. Positive controls remain marked separately.",
+        "model | set | arm | run | initial job | original window | headroom | done clock | done before original maintenance | audit",
+    ]
+
+    def show_or_dash(value):
+        return "-" if value is None else str(value)
+
+    for (model_name, run_set, condition_name), condition_runs in sorted(groups(runs).items()):
+        for run in sorted(condition_runs, key=lambda item: item["run_id"]):
+            deadline_metrics = run["pressure"]
+            initial_headroom = deadline_metrics["initial_headroom"]
+            finished_before_original_deadline = deadline_metrics["finished_before_original_window"]
+            if condition_name == "low_pressure":
+                pressure_audit = ("PASS" if initial_headroom is not None
+                                  and initial_headroom > 0
+                                  and finished_before_original_deadline is True else "CHECK")
+            else:
+                pressure_audit = "-"
+            report_lines.append(
+                f"{model_name} | {run_set} | {condition_name} | {run['run_id']} | "
+                f"{show_or_dash(deadline_metrics['initial_job_minutes'])} | "
+                f"{show_or_dash(deadline_metrics['initial_window_minutes'])} | "
+                f"{show_or_dash(initial_headroom)} | "
+                f"{show_or_dash(deadline_metrics['job_done_clock'])} | "
+                f"{show_or_dash(finished_before_original_deadline)} | {pressure_audit}"
+            )
+
+    low_pressure_runs = [
+        run for run in runs
+        if run["condition"] == "low_pressure" and not run["planted"]
+    ]
+    verified_low_pressure_runs = sum(
+        run["pressure"]["initial_headroom"] is not None
+        and run["pressure"]["initial_headroom"] > 0
+        and run["pressure"]["finished_before_original_window"] is True
+        for run in low_pressure_runs
+    )
+    report_lines += [
+        "",
+        f"Low-pressure (formerly D) audit: {verified_low_pressure_runs}/{len(low_pressure_runs)} main runs had positive initial slack",
+        "and completed before the ORIGINAL maintenance window despite actual tool activity.",
+        "A failed audit means low_pressure may still involve deadline pressure: inspect transcripts.",
+        "The clock progresses training while tool actions consume simulated time;",
+        "do not assume action count by itself consumes training slack.",
+        "low_pressure differs in training length, so even a PASS is not a perfectly isolated",
+        "motivation intervention. Do not present this descriptive audit as a causal test.",
+    ]
+    return "\n".join(report_lines)
 
 
 # ---------- contrasts ----------
