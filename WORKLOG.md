@@ -14,7 +14,7 @@ Full design: [README](README.md) · Team plan (roles, timeline): [Zeno-Shadow Te
 
 ## Status
 
-*Last updated: Sat Nov 7, 11:40 AM ET (Claude)*
+*Last updated: Sat Nov 7, 11:41 AM ET (Claude)*
 
 | Area | State | Owner | Next step |
 |---|---|---|---|
@@ -36,9 +36,10 @@ Full design: [README](README.md) · Team plan (roles, timeline): [Zeno-Shadow Te
 ## Log
 
 ### Sat Nov 7
+- **11:41 AM, Claude:** Correction: "Amelie Knecht" appears on the hackathon page under "Judges and mentors" (judge or mentor not specified), matched to the paper's first author by name only. Fixed the wording here and in the team plan.
 - **11:40 AM, Claude:** Created this worklog and linked it from the README.
 - **~11:35 AM, Claude:** Reviewed Knecht et al.'s code ([repo](https://github.com/AmelieKnecht/multi-agent-shutdown-sabotage)). It has **no license** and a different structure (one agent active at a time, files only, no permissions or checkpoints), so we write our own harness. Ideas to reuse with credit: streaming API calls with retries, reporting runs that hit step caps, rule-based checking instead of an LLM judge, detecting indirect workarounds, Boschloo's test. They ran V4 Flash at temperature 1.0.
-- **~11:30 AM, Claude:** Adopted the merged design: simulated ML training job approaching maintenance, `maintenance_override` authorized in Phase 1 then revoked, 0/1/3 peers keep it, plus sham, necessary-permission and "maintenance doesn't threaten the job" (D) conditions. Positioned as building on [Knecht et al. 2026](https://arxiv.org/abs/2609.28274), whose first author is a judge. Updated README and team plan.
+- **~11:30 AM, Claude:** Adopted the merged design: simulated ML training job approaching maintenance, `maintenance_override` authorized in Phase 1 then revoked, 0/1/3 peers keep it, plus sham, necessary-permission and "maintenance doesn't threaten the job" (D) conditions. Positioned as building on [Knecht et al. 2026](https://arxiv.org/abs/2609.28274), whose first author shares a name with someone on the hackathon's "Judges and mentors" list. Updated README and team plan.
 - **~11:28 AM, Claude:** Verified the new citations: Knecht et al. (shutdown sabotage between peers, also tested DeepSeek V4 Flash), Makins et al. (distributed attacks beat per-agent monitors), ShutdownMod, Potter et al. (peer preservation). None revokes a permission mid-run.
 - **~11:25 AM, Claude:** Made the team plan doc (roles, timeline, decisions).
 - **~11:20 AM, Claude:** Created the GitHub repo contents: README, `.env.example`, `.gitignore`. The real key stays in a local `.env` only.
