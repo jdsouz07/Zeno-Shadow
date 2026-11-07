@@ -372,45 +372,81 @@ def cmd_pressure(runs: list[dict]) -> str:
 
 # ---------- contrasts ----------
 def contrast_rows(runs: list[dict]) -> list[dict]:
-    rows = []
-    main = [r for r in runs if not r["planted"]]
-    for model in sorted({r["model"] for r in main}):
-        mr = [r for r in main if r["model"] == model]
-        block = []
-        for a, b, outcome, question in CONTRASTS:
-            ra = [r for r in mr if r["condition"] == a]
-            rb = [r for r in mr if r["condition"] == b]
-            ka, kb = sum(r[outcome] for r in ra), sum(r[outcome] for r in rb)
-            p = stats.boschloo(ka, len(ra), kb, len(rb)) if ra and rb else float("nan")
-            strata = []
-            for sp in sorted({r["savepoint"] for r in ra} & {r["savepoint"] for r in rb}):
-                sa = [r for r in ra if r["savepoint"] == sp]
-                sb = [r for r in rb if r["savepoint"] == sp]
-                strata.append((sum(r[outcome] for r in sa), len(sa), sum(r[outcome] for r in sb), len(sb)))
-            block.append({"model": model, "a": a, "b": b, "outcome": outcome, "question": question,
-                          "ka": ka, "na": len(ra), "kb": kb, "nb": len(rb),
-                          "diff": (ka / len(ra) - kb / len(rb)) if ra and rb else float("nan"),
-                          "p": p, "p_cmh": stats.cmh(strata) if strata else float("nan")})
-        for row, ph in zip(block, stats.holm([r["p"] for r in block])):
-            row["p_holm"] = ph
-        rows += block
-    return rows
+    """Evaluate only the five preregistered comparisons, excluding planted controls."""
+    contrast_results = []
+    unplanted_runs = [run for run in runs if not run["planted"]]
+    for model_name in sorted({run["model"] for run in unplanted_runs}):
+        model_runs = [run for run in unplanted_runs if run["model"] == model_name]
+        model_contrasts = []
+        for first_arm, second_arm, outcome_name, research_question in CONTRASTS:
+            first_arm_runs = [run for run in model_runs if run["condition"] == first_arm]
+            second_arm_runs = [run for run in model_runs if run["condition"] == second_arm]
+            first_successes = sum(run[outcome_name] for run in first_arm_runs)
+            second_successes = sum(run[outcome_name] for run in second_arm_runs)
+            has_both_arms = bool(first_arm_runs and second_arm_runs)
+            exact_p_value = (
+                stats.boschloo(first_successes, len(first_arm_runs),
+                               second_successes, len(second_arm_runs))
+                if has_both_arms else float("nan")
+            )
+            common_savepoints = sorted(
+                {run["savepoint"] for run in first_arm_runs}
+                & {run["savepoint"] for run in second_arm_runs}
+            )
+            savepoint_strata = []
+            for savepoint_name in common_savepoints:
+                first_savepoint_runs = [run for run in first_arm_runs
+                                        if run["savepoint"] == savepoint_name]
+                second_savepoint_runs = [run for run in second_arm_runs
+                                         if run["savepoint"] == savepoint_name]
+                savepoint_strata.append((
+                    sum(run[outcome_name] for run in first_savepoint_runs),
+                    len(first_savepoint_runs),
+                    sum(run[outcome_name] for run in second_savepoint_runs),
+                    len(second_savepoint_runs),
+                ))
+            rate_difference = (
+                first_successes / len(first_arm_runs)
+                - second_successes / len(second_arm_runs)
+                if has_both_arms else float("nan")
+            )
+            # Retain the report's established field names for compatibility.
+            model_contrasts.append({
+                "model": model_name, "a": first_arm, "b": second_arm,
+                "outcome": outcome_name, "question": research_question,
+                "ka": first_successes, "na": len(first_arm_runs),
+                "kb": second_successes, "nb": len(second_arm_runs),
+                "diff": rate_difference, "p": exact_p_value,
+                "p_cmh": stats.cmh(savepoint_strata) if savepoint_strata else float("nan"),
+            })
+        adjusted_p_values = stats.holm([result["p"] for result in model_contrasts])
+        for result, adjusted_p_value in zip(model_contrasts, adjusted_p_values):
+            result["p_holm"] = adjusted_p_value
+        contrast_results.extend(model_contrasts)
+    return contrast_results
 
 
-def _f(x: float, spec: str) -> str:
-    return "-" if isinstance(x, float) and math.isnan(x) else format(x, spec)
+def _format_statistic(value: float, format_specification: str) -> str:
+    return "-" if isinstance(value, float) and math.isnan(value) else format(value, format_specification)
 
 
 def cmd_contrasts(runs: list[dict]) -> str:
-    lines = ["model | contrast | outcome | A | B | diff | Boschloo p | Holm p | CMH p (by save point)"]
-    for r in contrast_rows(runs):
-        lines.append(f"{r['model']} | {r['a']} vs {r['b']} | {r['outcome']} | {r['ka']}/{r['na']} | "
-                     f"{r['kb']}/{r['nb']} | {_f(r['diff'], '+.0%')} | {_f(r['p'], '.4f')} | "
-                     f"{_f(r['p_holm'], '.4f')} | {_f(r['p_cmh'], '.4f')}")
-    lines += ["", "Two-sided. Holm adjusts the 5 contrasts within each model. Missing arms show '-'.",
-              "Positive-control (planted) runs are excluded here. With 15 runs per arm only large",
-              "differences are detectable: report the rates and intervals, not just p-values."]
-    return "\n".join(lines)
+    report_lines = ["model | contrast | outcome | A | B | diff | Boschloo p | Holm p | CMH p (by save point)"]
+    for contrast in contrast_rows(runs):
+        report_lines.append(
+            f"{contrast['model']} | {contrast['a']} vs {contrast['b']} | {contrast['outcome']} | "
+            f"{contrast['ka']}/{contrast['na']} | {contrast['kb']}/{contrast['nb']} | "
+            f"{_format_statistic(contrast['diff'], '+.0%')} | "
+            f"{_format_statistic(contrast['p'], '.4f')} | "
+            f"{_format_statistic(contrast['p_holm'], '.4f')} | "
+            f"{_format_statistic(contrast['p_cmh'], '.4f')}"
+        )
+    report_lines += [
+        "", "Two-sided. Holm adjusts the 5 contrasts within each model. Missing arms show '-'.",
+        "Positive-control (planted) runs are excluded here. With 20 runs per arm only large",
+        "differences are detectable: report the rates and intervals, not just p-values.",
+    ]
+    return "\n".join(report_lines)
 
 
 # ---------- review package ----------
@@ -556,7 +592,7 @@ def cmd_agreement(a: Path, b: Path) -> str:
         xa, xb = [ra[k][col].strip() for k in keys], [rb[k][col].strip() for k in keys]
         both = sum(1 for x, y in zip(xa, xb) if x and y)
         agree = sum(1 for x, y in zip(xa, xb) if x and y and x == y)
-        lines.append(f"{col}: {both} labelled by both, {agree} agree, kappa {_f(stats.cohen_kappa(xa, xb), '.2f')}")
+        lines.append(f"{col}: {both} labelled by both, {agree} agree, kappa {_format_statistic(stats.cohen_kappa(xa, xb), '.2f')}")
     dis = [k for k in keys if any(ra[k][c].strip() and rb[k][c].strip() and ra[k][c].strip() != rb[k][c].strip()
                                   for c in ("attribution", "intent"))]
     if dis:
