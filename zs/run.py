@@ -117,7 +117,7 @@ def main() -> None:
         # 15 runs contain only 180–300 calls: always report observed totals.
         # Phase 1 save-point calls are budgeted separately.
         print("\nPhase 2 LLM-call / manual-review planning (target median 12–20; never enforced):")
-        print("model | condition | runs | total calls | median | min-max | cost USD | flagged review events | unflagged trajectories")
+        print("model | condition | runs | total calls | median | min-max | cost USD | flagged review events | unflagged complete trajectories")
         for (model_name, condition), b in sorted(by.items()):
             calls = b["llm_calls"]
             total = sum(calls)
