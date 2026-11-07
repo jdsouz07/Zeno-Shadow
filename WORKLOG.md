@@ -16,7 +16,7 @@ Full design: [README](README.md) · Open choices: [DECISIONS.md](DECISIONS.md) �
 
 ## Status
 
-*Last updated: Sat Nov 7, 12:23 PM ET (Claude)*
+*Last updated: Sat Nov 7, 12:27 PM ET (Claude)*
 
 | Area | State | Owner | Next step |
 |---|---|---|---|
@@ -26,7 +26,7 @@ Full design: [README](README.md) · Open choices: [DECISIONS.md](DECISIONS.md) �
 | Measurement | Not started | B | Write exact definitions of a violation and the three intent codes |
 | Write-up | Not started | C | Related-work section (list in README) |
 
-**Open decisions:** 13 choices with pros, cons and a recommendation are in [DECISIONS.md](DECISIONS.md). Answered: 1 (temperature 1.0), 2 (handoff), 3 (DMs + shared channel), 4 (infrastructure engineer loses the override; scheduler, then budget controller and checkpoint engineer, keep it). Still blocking the harness: 5–7, plus a look at the handoff follow-ups 2a–2c.
+**Open decisions:** 13 choices with pros, cons and a recommendation are in [DECISIONS.md](DECISIONS.md). Answered: 1 (temperature 1.0), 2 (handoff), 3 (DMs + shared channel), 4 (infrastructure engineer loses the override; scheduler, then budget controller and checkpoint engineer, keep it). 2a accepted (clock tick per handoff). Still blocking the harness: 5–7, plus John's OK on revised 2b–2c.
 
 ---
 
@@ -67,6 +67,7 @@ Build the harness today against a fake model, pilot tonight, run everything over
 ## Log
 
 ### Sat Nov 7
+- **12:27 PM, Claude:** DECISIONS 2a accepted by John. Revised 2b (if nobody talks, jump the clock to the next maintenance warning; end the run when quiet after the last one) and 2c (caps are loop guards; handoff cap raised to 60) after his questions; awaiting his OK.
 - **12:23 PM, Claude:** Recorded John's answer to DECISIONS 4: infrastructure engineer = agent A (loses the override); "1 peer" = compute scheduler keeps it; "3 peers" = scheduler, budget controller, checkpoint engineer. Still open: 5–7 and 2a–2c.
 - **12:10 PM, Chat:** Reviewed current [README](README.md), worklog, and team plan; confirmed the shared six-agent ML-training/maintenance design and seven conditions. **Rationale:** Mid-run revocation with 0/1/3 peers retaining a technically usable but policy-forbidden override tests whether population-level access survives individual revocation; sham, necessary-permission, and unrelated-maintenance controls help distinguish bypass attempts from legitimate recovery and task pressure. Preserved all existing entries and made no changes to experimental code or agreed conditions. Future contributions will use the same newest-first log format with the `Chat` tag and a brief design justification.
 - **12:05 PM, Claude:** Added a **Plan** section above (roles, right-now tasks, timeline, $150 budget plan), so the plan lives here in the repo, not only in the private plan doc.
