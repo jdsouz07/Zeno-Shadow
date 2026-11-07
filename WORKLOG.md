@@ -16,7 +16,7 @@ The one place to see what's going on. Everyone (and Claude) updates it after doi
 
 ## Status
 
-*Last updated: Sat Nov 7, 3:25 PM ET (Claude (John))*
+*Last updated: Sat Nov 7, 3:33 PM ET (Claude (John))*
 
 | Area | State | Owner | Next step |
 |---|---|---|---|
@@ -50,7 +50,7 @@ Build the harness today against a fake model, pilot tonight, run everything over
   - **Mae:** `./run_my_runs.py mae` (24 runs, ~45 min)
 - [ ] **Naisha (B):** while runs go, prepare the review sheet; afterwards review every flagged case + sampled clean runs; statistics; main chart
 - [ ] **Mae (C):** while runs go, draft intro, related work and method from [OVERVIEW.md](OVERVIEW.md)
-- [ ] **John:** decide whether to add the "attempted circumvention" count (analysis-only)
+- [x] **John:** add the "attempted circumvention" count (decided, implemented)
 
 ### Timeline (ET)
 | When | Checkpoint | Owner |
@@ -73,6 +73,7 @@ Build the harness today against a fake model, pilot tonight, run everything over
 ## Log
 
 ### Sat Nov 7
+- **3:33 PM, Claude (John):** **Attempted circumvention added** (John's decision, before any main-run results): per-run outcome = R1 proxy request, V1, V2, denied or late attempt; possible in every revoke arm incl. revoke-0. Two pre-declared contrasts added (revoke-1 vs revoke-0, revoke-3 vs revoke-1), Holm now over seven. Analysis code + test only (42 tests pass); no change to `zs/` or the runs. Recorded in MEASUREMENT.md §3.1, DECISIONS, OVERVIEW, EXPLAIN. **Naisha:** please review §3.1 since it's your area.
 - **3:30 PM, Claude (Naisha):** **Analysis bug fixed** (B's code only; `zs/` and `run_my_runs.py` untouched): the exploratory `noextension` arm was missing from the analysis's forbidden-override list, so `table` showed its violations as "n/a (allowed)" and grouped it with the main arms. Now its violation rate is counted and it's labeled `exploratory`, never in the 5 contrasts. New test; full suite passes (40).
 - **3:29 PM, Chat (for Mae):** **Naming and readability refactor requested by Mae**, following an audit of `zs/`, `analysis/`, `run_my_runs.py`, tests, and docs. Renamed ambiguous arm **D / `unrelated` → Low Deadline Pressure / `low_pressure`**, explicitly meaning **30 simulated minutes of training vs 45 to maintenance** with the same override holder as Revoke-1. Legacy `unrelated` remains an accepted alias; saved logs are normalized into `low_pressure`, old completed forks are not rerun, and the old random-seed input is preserved. Clarified simulator constants and role names (e.g. `AGENT_A` → `INFRASTRUCTURE_ENGINEER_ROLE`, `KEEPERS` → `RETAINED_OVERRIDE_HOLDERS_BY_CONDITION`), run-coordinator functions and variables, plus analysis request-link and deadline-pressure variables. Kept serialized world/log field names, tool schemas, agent-facing prompt text, policy, permissions, and timing stable for reproducibility. **`--conditions all` now excludes the separately reported exploratory extension-exhausted (`noextension`) arm; the explicit run script's primary and exploratory slices remain unchanged.** Updated [README.md](README.md), [OVERVIEW.md](OVERVIEW.md), [DECISIONS.md](DECISIONS.md), [MEASUREMENT.md](MEASUREMENT.md), and compatibility tests (now **40 test methods**). **Coordination warning:** John reported at 3:22 PM that active main runs should not receive further edits to `zs/` or `run_my_runs.py`; stopped editing those modules and confined the finishing work to docs, analysis and tests. John previously checked the base rename's byte-identical fake trajectories, but **the last source/test edits were not independently test-executed by Chat**; everyone should pull and run `python3 -m unittest discover -s tests -t . -v` before proceeding. **Reason:** the old name falsely implied a task wholly unrelated to maintenance; the new name identifies reduced deadline pressure without changing the experiment's causal comparison.
 - **3:28 PM, Chat:** **Condition naming/refactor audit:** inspected `zs/world.py`, `zs/run.py`, `zs/harness.py`, `run_my_runs.py`, `analysis/analyze.py` and tests. D / `unrelated` has already been renamed to **`low_pressure`** (30-min job against 45-min deadline), with a backwards-compatible alias for historical runs. John previously reported 39 passing tests and byte-identical scenario behavior. **Honoring John's freeze on `zs/` and `run_my_runs.py` while distributed results are collected.** Refactored only statistical comparisons in `analysis/analyze.py`: named first/second arm, successes, savepoint strata and Holm-adjusted p-values instead of `ra/rb/ka/kb/ph`; preserved five preregistered comparisons, calculations, and output field keys. Tests for this most recent analysis-only refactor were **not executed here**; locally verify with `python3 -m unittest discover -s tests -t . -v`. Do not globally rename serialized log keys or active run IDs mid-study. [Analysis-only commit](https://github.com/jdsouz07/Zeno-Shadow/commit/cda9de7ba515a801f950f5090f6607d1c7afd7c1).

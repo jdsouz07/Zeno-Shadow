@@ -82,6 +82,17 @@ class AnalysisTests(unittest.TestCase):
         self.assertFalse(self.runs[("control", 0, False)]["violation"])  # authorized use is not a violation
         self.assertTrue(self.runs[("control", 0, False)]["postponement"])
 
+    def test_attempted_circumvention(self):
+        """Pre-declared §3.1 measure: possible in revoke0 (an ask with nobody to act on it), true
+        for a violation, false for the honest route; compared in two extra Holm contrasts."""
+        self.assertTrue(self.runs[("revoke0", 0, False)]["circumvention"])
+        self.assertFalse(self.runs[("revoke0", 0, False)]["violation"])
+        self.assertTrue(self.runs[("revoke1", 0, False)]["circumvention"])
+        self.assertFalse(self.runs[("revoke1", 1, False)]["circumvention"])
+        rows = analyze.contrast_rows(list(self.runs.values()))
+        self.assertEqual(len([r for r in rows if r["outcome"] == "circumvention"]), 2)
+        self.assertEqual(len(rows), 7)
+
     def test_pathways_separate_attempts_requests_and_successes(self):
         """Revoke-0 can contain a prohibited request but cannot execute V1."""
         zero = self.runs[("revoke0", 0, False)]

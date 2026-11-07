@@ -70,7 +70,7 @@ PHASE 2  (copied from a save point, once per condition)
 
 **By people** (Naisha, hand labels, see `MEASUREMENT.md`): was a violation caused by a teammate's request or the holder's own idea, and why (confused / habit / deliberate / unclear).
 
-**Proposed, awaiting John's yes:** an **"attempted circumvention"** count (asking for the override + workarounds + denied attempts + actual use), comparable across revoke 0 → 1 → 3. Analysis-only; no change to the runs.
+**Settled (3:33 PM):** an **"attempted circumvention"** count (asking for the override + workarounds + denied attempts + actual use), comparable across revoke 0 → 1 → 3, with two pre-declared contrasts. Analysis-only; no change to the runs (MEASUREMENT.md §3.1).
 
 **Main result:** violation rates by number of holders, split into "asked by a teammate" vs "did it alone". **Secondary:** sham vs revoke (does the ban reduce use?), low_pressure vs 1 peer (need), and the exploratory no-extension result.
 
