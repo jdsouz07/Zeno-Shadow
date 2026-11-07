@@ -56,11 +56,11 @@ def stop_with_error(msg: str) -> None:
     sys.exit(1)
 
 
-def run_shell_command(cmd: list[str], env: dict | None = None, check: bool = True) -> subprocess.CompletedProcess:
-    r = subprocess.run(cmd, cwd=REPOSITORY_ROOT, env=env, text=True)
-    if check and r.returncode != 0:
-        stop_with_error(f"command failed: {' '.join(cmd)}")
-    return r
+def run_shell_command(command: list[str], env: dict | None = None, check: bool = True) -> subprocess.CompletedProcess:
+    completed_process = subprocess.run(command, cwd=REPOSITORY_ROOT, env=env, text=True)
+    if check and completed_process.returncode != 0:
+        stop_with_error(f"command failed: {' '.join(command)}")
+    return completed_process
 
 
 def read_openrouter_key() -> str:
@@ -84,9 +84,9 @@ def openrouter_balance_remaining(key: str) -> float | None:
     import urllib.request
 
     from zs.llm import _SSL
-    req = urllib.request.Request("https://openrouter.ai/api/v1/key", headers={"Authorization": f"Bearer {key}"})
+    balance_request = urllib.request.Request("https://openrouter.ai/api/v1/key", headers={"Authorization": f"Bearer {key}"})
     try:
-        data = json.load(urllib.request.urlopen(req, timeout=30, context=_SSL)).get("data", {})
+        data = json.load(urllib.request.urlopen(balance_request, timeout=30, context=_SSL)).get("data", {})
     except Exception as e:  # report, don't print the key
         stop_with_error(f"could not check the key with OpenRouter ({type(e).__name__}: {e})")
     return data.get("limit_remaining")
@@ -133,18 +133,18 @@ def main() -> None:
     ap.add_argument("--no-push", action="store_true")
     ap.add_argument("--fake", choices=["comply", "proxy", "vague"], help="free practice run")
     args = ap.parse_args()
-    sps, conds, reps, rep_start, log_dir_name, extra = RUN_ASSIGNMENTS[args.who]
+    assigned_savepoints, assigned_conditions, replicate_count, first_replicate_index, output_directory_name, additional_grids = RUN_ASSIGNMENTS[args.who]
     if args.fake:
-        log_dir_name = "runs_practice"
-    log_dir = REPOSITORY_ROOT / log_dir_name
-    n = count_planned_runs(args.who)
+        output_directory_name = "runs_practice"
+    output_directory = REPOSITORY_ROOT / output_directory_name
+    planned_run_total = count_planned_runs(args.who)
 
-    announce_step(f"Plan for {args.who}: {n} runs, {args.parallel} at a time, results in {log_dir_name}/")
-    for job in build_grid_arguments(args.who):
-        print("   python3 -m zs.run grid " + " ".join(job) + f" --parallel {args.parallel}")
+    announce_step(f"Plan for {args.who}: {planned_run_total} runs, {args.parallel} at a time, results in {output_directory_name}/")
+    for grid_arguments in build_grid_arguments(args.who):
+        print("   python3 -m zs.run grid " + " ".join(grid_arguments) + f" --parallel {args.parallel}")
     import math
-    print(f"   Rough time: ~{math.ceil(n / args.parallel) * 9} min (about 9 min per batch of {args.parallel})"
-          f"   rough cost: ~${n * 0.012:.2f}")
+    print(f"   Rough time: ~{math.ceil(planned_run_total / args.parallel) * 9} min (about 9 min per batch of {args.parallel})"
+          f"   rough cost: ~${planned_run_total * 0.012:.2f}")
 
     announce_step("1. Checks")
     if sys.version_info < (3, 10):
@@ -163,53 +163,53 @@ def main() -> None:
         _real_preflight(key)
 
     announce_step("3. Save points")
-    if args.fake and log_dir.exists():
-        shutil.rmtree(log_dir)  # practice starts fresh each time
-    src = REPOSITORY_ROOT / "runs" / "savepoints"
-    need = sorted({sp for job in [sps] + [e[0] for e in extra] for sp in job})
-    missing = [sp for sp in need if not (src / f"{sp}.json").exists()]
-    if missing:
-        stop_with_error(f"missing save points {missing} in runs/savepoints/. Pull again, or ask John.")
-    if log_dir_name != "runs":  # pilot/practice run on copies, kept apart from real results
-        (log_dir / "savepoints").mkdir(parents=True, exist_ok=True)
-        for sp in need:
-            shutil.copy2(src / f"{sp}.json", log_dir / "savepoints" / f"{sp}.json")
-    print(f"   {need} OK")
+    if args.fake and output_directory.exists():
+        shutil.rmtree(output_directory)  # practice starts fresh each time
+    savepoint_source_directory = REPOSITORY_ROOT / "runs" / "savepoints"
+    required_savepoints = sorted({sp for grid_arguments in [assigned_savepoints] + [e[0] for e in additional_grids] for sp in grid_arguments})
+    missing_savepoints = [sp for sp in required_savepoints if not (savepoint_source_directory / f"{sp}.json").exists()]
+    if missing_savepoints:
+        stop_with_error(f"missing_savepoints save points {missing_savepoints} in runs/savepoints/. Pull again, or ask John.")
+    if output_directory_name != "runs":  # pilot/practice run on copies, kept apart from real results
+        (output_directory / "savepoints").mkdir(parents=True, exist_ok=True)
+        for sp in required_savepoints:
+            shutil.copy2(savepoint_source_directory / f"{sp}.json", output_directory / "savepoints" / f"{sp}.json")
+    print(f"   {required_savepoints} OK")
 
     announce_step("4. Running (safe to stop and rerun; finished runs are skipped)")
-    awake = None
+    keep_awake_process = None
     if sys.platform == "darwin" and shutil.which("caffeinate"):
-        awake = subprocess.Popen(["caffeinate", "-dims", "-w", str(os.getpid())])
-        print("   Keeping this Mac awake until the runs finish")
-    env = dict(os.environ, LOG_DIR=log_dir_name)
+        keep_awake_process = subprocess.Popen(["caffeinate", "-dims", "-w", str(os.getpid())])
+        print("   Keeping this Mac keep_awake_process until the runs finish")
+    env = dict(os.environ, LOG_DIR=output_directory_name)
     try:
-        for job in build_grid_arguments(args.who):
+        for grid_arguments in build_grid_arguments(args.who):
             fake = ["--fake", args.fake] if args.fake else []
-            run_shell_command([sys.executable, "-m", "zs.run", "grid", *job, "--parallel", str(args.parallel), *fake],
+            run_shell_command([sys.executable, "-m", "zs.run", "grid", *grid_arguments, "--parallel", str(args.parallel), *fake],
                env=env, check=False)
     finally:
-        if awake:
-            awake.terminate()
+        if keep_awake_process:
+            keep_awake_process.terminate()
 
     announce_step("5. Verify and summarize")
     run_shell_command([sys.executable, "-m", "zs.run", "verify"], env=env, check=False)
     run_shell_command([sys.executable, "-m", "zs.run", "summarize"], env=env, check=False)
 
     if args.fake:
-        announce_step(f"Practice done. Results are in {log_dir_name}/ (ignored by git); nothing to push.")
+        announce_step(f"Practice done. Results are in {output_directory_name}/ (ignored by git); nothing to push.")
         return
     if args.no_push:
-        announce_step(f"Done. Not pushed (--no-push). Push later with: git add {log_dir_name} && git commit && git push")
+        announce_step(f"Done. Not pushed (--no-push). Push later with: git add {output_directory_name} && git commit && git push")
         return
     announce_step("6. Commit and push your results")
-    run_shell_command(["git", "add", log_dir_name])
+    run_shell_command(["git", "add", output_directory_name])
     if subprocess.run(["git", "diff", "--cached", "--quiet"], cwd=REPOSITORY_ROOT).returncode == 0:
         announce_step("Nothing new to commit.")
         return
     if subprocess.run(["git", "diff", "--cached", "--name-only"], cwd=REPOSITORY_ROOT, capture_output=True,
                       text=True).stdout.count(".env"):
         stop_with_error("refusing to commit a .env file")
-    run_shell_command(["git", "commit", "-q", "-m", f"[{args.who.capitalize()}] {args.who} runs ({n} planned) into {log_dir_name}/"])
+    run_shell_command(["git", "commit", "-q", "-m", f"[{args.who.capitalize()}] {args.who} runs ({planned_run_total} planned) into {output_directory_name}/"])
     for _ in range(3):
         run_shell_command(["git", "pull", "--rebase", "--autostash"], check=False)
         if subprocess.run(["git", "push", "-q"], cwd=REPOSITORY_ROOT).returncode == 0:
