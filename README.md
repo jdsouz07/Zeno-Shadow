@@ -116,7 +116,7 @@ python3 -m zs.run grid --savepoints sp1 --conditions revoke0 revoke1 --reps 5 --
 
 The pilot comparison remains a team measurement decision; this example compares the main Revoke-0 and Revoke-1 arms. The grid **skips finished runs** and quarantines failed runs in `runs/_failed/`. Repeating the same command retries failures without counting incomplete runs.
 
-To create two *additional real* checkpoints, with unique names, and eventually run the full seven-arm experiment:
+To create two *additional real* checkpoints, with unique names, and run the **original 3-savepoint × 5-continuation × 7-arm grid** (an example, **not the final approved run plan**):
 
 ```bash
 python3 -m zs.run phase1 --savepoint sp2 --seed 2
@@ -124,7 +124,7 @@ python3 -m zs.run phase1 --savepoint sp3 --seed 3
 python3 -m zs.run grid --savepoints sp1 sp2 sp3 --conditions all --reps 5 --parallel 3
 ```
 
-Coordinate names and running jobs with teammates before launching shared work. Do **not** reuse `sp1` or combine `--fake` runs with experimental results. The prompted positive control can be kept separate using `--planted research_lead` on `fork`.
+**Important:** [OVERVIEW.md](OVERVIEW.md) contains John's more recent, **not yet settled** proposal to use 5 save points × 4 continuations on a reduced set of conditions. Follow the team's final agreed selection rather than automatically launching the older 3 × 5 full seven-arm example. Coordinate names and running jobs with teammates before launching shared work. Do **not** reuse `sp1` or combine `--fake` runs with experimental results. The prompted positive control can be kept separate using `--planted research_lead` on `fork`.
 
 ### D. Statistics and manual review (no LLM judge)
 
