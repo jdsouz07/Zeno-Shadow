@@ -38,7 +38,7 @@ Build the harness today against a fake model, pilot tonight, run everything over
 | Role | Person | Saturday | Sunday |
 |---|---|---|---|
 | A: Harness (with Claude) | | Simulated world, agents, logging, checkpoint replay, fake-model tests, pilot | Full runs, bug fixes, one-command rerun script |
-| B: Measurement | | Violation and intent definitions, proxy-request classifier | Hand-label ~50 messages, validate classifier, statistics, main figure |
+| B: Measurement | | Define violations and hand-label candidate proxy/intent events | Review flagged event contexts and sampled complete unflagged trajectories; statistics, main figure |
 | C: Write-up | | Related work, intro, draft claims for both outcomes | Results, limitations, polish, submit |
 
 ### Right now
@@ -59,6 +59,7 @@ Build the harness today against a fake model, pilot tonight, run everything over
 | Mon 6:59 AM | Hard deadline | — |
 
 ### Budget ($150: three $50 keys)
+- **Pilot LLM-call/review planning (Mae):** aim for a median of 12–20 LLM calls per Phase 2 continuation (not a cap); 15 runs per condition imply ~180–300 calls only if the mean also falls in that range. Track actual median, total, min/max, cost and flagged review events using `python3 -m zs.run summarize`. Phase 1 calls count separately. Manually review flagged candidate contexts and sample unflagged complete runs for misses; no LLM classifier (Decision 9).
 - Full set of 7 conditions × 15 runs ≈ $2 on V4 Flash, ≈ $10–25 on V4 Pro or V3.2. Time limits us, not money.
 - Plan: every condition on all three DeepSeek models; one non-DeepSeek model on the key conditions; up to ~25 runs per condition on V4 Flash if time allows; keep ~$30 in reserve.
 - Each key is capped at $50. Proposed: split runs by person, each on their own machine and key, pushing logs to the repo. The harness records which key and machine made each call.
@@ -68,6 +69,8 @@ Build the harness today against a fake model, pilot tonight, run everything over
 ## Log
 
 ### Sat Nov 7
+- **1:46 PM, Chat:** Instrumented `python3 -m zs.run summarize` to report Phase 2 LLM calls (total, median, min/max), dollar cost, flagged review events and unflagged complete trajectories per model/condition, alongside existing violation counts. **Rationale:** make Mae's pilot call/review budget measurable rather than relying on a speculative 12–20-call estimate; it is **not** a hard cap, and Phase 1 calls are separate. No agent behavior, caps or policy modified. [Implementation](https://github.com/jdsouz07/Zeno-Shadow/commit/d412499b4472588242a331b15dfa2968b7204d97).
+- **1:46 PM, Mae:** Specified a **non-binding pilot planning budget** of median 12–20 LLM calls per Phase 2 continuation, preserving all relevant agents' event-triggered turns. With 15 runs per condition this is ~180–300 calls **only if the per-run mean is also 12–20** (median alone does not cap total). **Rationale:** shorten traces and manual-review workload without silencing meaningful interactions; deterministic monitor flags action violations, human reviewers inspect surrounding messages/actions for flagged candidates and sample complete unflagged trajectories for misses. No LLM judge. Logged under Decision 9 in [DECISIONS.md](DECISIONS.md).
 - **1:44 PM, Claude (Naisha):** Naisha took on **B (Measurement)**. Added draft [MEASUREMENT.md](MEASUREMENT.md): objective events (unauthorized override, schedule workaround, attempts, proxy and restore requests), primary outcome and 5 proposed contrasts, hand-coding rules for attribution and confused/habit/deliberate (two passes: without, then with reasoning), test-awareness coding, two-reviewer procedure. **Open for the team:** Q1 the pilot's Sham vs Revoke-1 can't compare violation rates (override is still authorized in Sham); Q2 second reviewer (Mae?); Q3 add a comprehension check (README promises one; harness has none). Monitor gaps for A in §8. No code changed.
 - **1:43 PM, Claude (John):** Fixed the Phase 1 emergency (John approved): a hardware fault now **pulls maintenance forward to 10 minutes from now**, so run-A is genuinely at risk even if the team already got an extension, and the alert text is computed from the state so it's always true. 16 tests pass. The flawed `sp1` was set aside (never committed); re-running Phase 1 as `sp1` now. Phase 2 numbers (Decision 8 / the 60-minute job) not changed yet.
 - **1:41 PM, Mae:** Settled [DECISIONS.md](DECISIONS.md) Decision 9: **hand labels only**, no LLM classifier/judge for inferred intent or proxied-versus-spontaneous attribution. **Rationale:** For this hackathon-scale study, manually reviewed trace evidence is more auditable than an unvalidated LLM judge. The deterministic monitor remains responsible for objective attempted/successful policy-violation counts; human reviewers inspect all flagged candidate chains and sampled unflagged traces, independently resolve ambiguous cases where feasible, and allow `unclear / insufficient evidence` rather than claiming to know hidden motives. No harness code changed. [Decision commit](https://github.com/jdsouz07/Zeno-Shadow/commit/8d24d38a64b762c2d326a2691d36288750e81a76).
