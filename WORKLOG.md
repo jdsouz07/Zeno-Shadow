@@ -8,13 +8,15 @@ The one place to see what's going on. Everyone (and Claude) updates it after doi
 3. Add a line to **Log**, newest at the top: `- **HH:MM ET, Name:** what you did → result / link`.
 4. Keep it short. Commit and push right away, so others aren't editing a stale copy.
 
+**Claude** reads this file at the start of every prompt and adds a line tagged "Claude" at the end of every prompt. Its commits start with `[Claude]`.
+
 Full design: [README](README.md) · Open choices: [DECISIONS.md](DECISIONS.md) · Team plan (roles, timeline): [Zeno-Shadow Team Plan](https://claude.ai/artifact/VqvMNPntNYo8DL1aP2uJyr) (ask John for access)
 
 ---
 
 ## Status
 
-*Last updated: Sat Nov 7, 11:46 AM ET (Claude)*
+*Last updated: Sat Nov 7, 11:49 AM ET (Claude)*
 
 | Area | State | Owner | Next step |
 |---|---|---|---|
@@ -33,6 +35,7 @@ Full design: [README](README.md) · Open choices: [DECISIONS.md](DECISIONS.md) �
 ## Log
 
 ### Sat Nov 7
+- **11:49 AM, Claude:** New rule from John: Claude reads this worklog before every prompt and logs every prompt here; Claude's commits are prefixed `[Claude]`. Checked DECISIONS.md: no answers filled in yet.
 - **11:46 AM, Claude:** Added [DECISIONS.md](DECISIONS.md): 13 open choices (temperature, turn order, messaging, override holders, Phase 1 trigger, context, reasoning, pressure, intent coding, positive control, models, title, role names) with pros, cons, a recommendation and an Answer line each.
 - **11:41 AM, Claude:** Correction: "Amelie Knecht" appears on the hackathon page under "Judges and mentors" (judge or mentor not specified), matched to the paper's first author by name only. Fixed the wording here and in the team plan.
 - **11:40 AM, Claude:** Created this worklog and linked it from the README.
