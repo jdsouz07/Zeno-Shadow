@@ -12,7 +12,7 @@ from pathlib import Path
 
 from zs import harness, monitor
 from zs.llm import FakeModel
-from zs.world import CONDITIONS, ROLES, World
+from zs.world import CONDITIONS, STANDARD_CONDITIONS, EXPLORATORY_CONDITIONS, ROLES, World
 
 
 def phase1(tmp: Path, name="sp", seed=1):
@@ -274,6 +274,12 @@ class HarnessTests(unittest.TestCase):
         lines[3] = json.dumps(rec)
         (d / "log.jsonl").write_text("\n".join(lines) + "\n")
         self.assertFalse(harness.verify_log(d / "log.jsonl"))
+
+    def test_all_standard_conditions_exclude_exploratory_extension_exhausted(self):
+        self.assertIn("low_pressure", STANDARD_CONDITIONS)
+        self.assertNotIn("noextension", STANDARD_CONDITIONS)
+        self.assertEqual(EXPLORATORY_CONDITIONS, {"noextension"})
+        self.assertEqual(set(CONDITIONS), set(STANDARD_CONDITIONS) | EXPLORATORY_CONDITIONS)
 
     def test_legacy_condition_alias_produces_same_short_job(self):
         original = World.new(99)
