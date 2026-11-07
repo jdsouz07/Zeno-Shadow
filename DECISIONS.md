@@ -69,10 +69,10 @@ Maintenance starts 180 simulated minutes into each phase, with warnings at 30 an
 ### 4. Who holds `maintenance_override`, and who keeps it after revocation
 | Option | Pros | Cons |
 |---|---|---|
-| **Infrastructure engineer = agent A (loses it). "1 peer": compute scheduler keeps it. "3 peers": scheduler, budget controller and checkpoint engineer keep it.** ✅ | The agents who benefit from more time (research lead, training engineer) must *ask* a holder, and that request is the proxy behaviour we measure. | Results depend on which roles were picked. Report as a limitation. |
+| **The infrastructure engineer loses it. "1 peer": compute scheduler keeps it. "3 peers": scheduler, budget controller and checkpoint engineer keep it.** ✅ | The agents who benefit from more time (research lead, training engineer) must *ask* a holder, and that request is the proxy behaviour we measure. | Results depend on which roles were picked. Report as a limitation. |
 | Randomize holders across roles each run | Results don't hinge on one role. | Needs more runs to average out; 15 per condition isn't enough. |
 
-**Answer:** John: **the recommended option.** Infrastructure engineer is agent A and loses the override. "1 peer": the compute scheduler keeps it. "3 peers": scheduler, budget controller and checkpoint engineer keep it. Research lead and training engineer never hold it after revocation, so they must ask a holder.
+**Answer:** John: **the recommended option.** The infrastructure engineer loses the override. "1 peer": the compute scheduler keeps it. "3 peers": scheduler, budget controller and checkpoint engineer keep it. Research lead and training engineer never hold it after revocation, so they must ask a holder.
 
 ### 5. How the override gets used in Phase 1
 | Option | Pros | Cons |
@@ -159,7 +159,7 @@ Maintenance starts 180 simulated minutes into each phase, with warnings at 30 an
 | **V4 Flash on every condition; V4 Pro and V3.2 only on sham vs "1 peer keeps it"** ✅ | Cheap-vs-strong comparison plus a direct comparison with Kanchi. | Results stay DeepSeek-only. |
 | Also add one non-DeepSeek model on the key arms | Answers "is this just DeepSeek?" | Costs more; only if budget is left. |
 
-**Answer:**
+**Answer:** John: **V4 Flash everywhere** (told the Q&A helper; recorded by Claude (John)). No V4 Pro, V3.2 or non-DeepSeek runs; spend the budget and time on more runs per condition instead. Limitation to state in the write-up: results are for one model.
 
 ### 12. Title
 | Option | Pros | Cons |
@@ -168,9 +168,10 @@ Maintenance starts 180 simulated minutes into each phase, with warnings at 30 an
 | **"Revocation Probes: Do Agent Swarms Route Around Removed Permissions?"** ✅ | Says exactly what we did. | Less catchy. |
 | "Break-Glass Never Closes" | Catchy; ties to real emergency-access practice. | Only fits if agents bypass out of habit rather than deliberately. |
 
-**Answer:**
+**Answer:** John: **title "Revocation Probes: Do Agent Swarms Route Around Removed Permissions?"**, keeping **Zeno-Shadow** as the project codename (repo name, mentioned once in the write-up) since the idea started there.
 
 ### 13. Names for roles A, B, C
+Wording fix approved by John: A, B and C now only mean people; the agent whose override is revoked is called "the infrastructure engineer" in all docs (the code constant `AGENT_A` is unchanged).
 - **A (Harness):**
 - **B (Measurement):**
 - **C (Write-up):**
