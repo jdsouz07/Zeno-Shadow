@@ -108,7 +108,7 @@ python3 -m zs.run summarize
 python3 -m zs.run verify
 ```
 
-These use actual model calls and incur small charges. `--model main` is the default (DeepSeek V4 Flash); the model/provider are configured in `.env`. To run multiple **independent** continuations in parallel, without changing sequential agent handoffs *inside* a continuation:
+These use actual model calls and incur small charges. **A real fork written into the default `runs/` directory is included in subsequent analysis, so do not run exploratory pilots there unless they are explicitly designated as study data; otherwise use a separate experimental output directory and preserve provenance.** `--model main` is the default (DeepSeek V4 Flash); the model/provider are configured in `.env`. To run multiple **independent** continuations in parallel, without changing sequential agent handoffs *inside* a continuation:
 
 ```bash
 python3 -m zs.run grid --savepoints sp1 --conditions revoke0 revoke1 --reps 5 --parallel 3
