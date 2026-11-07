@@ -19,7 +19,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from . import prompts
-from .world import APPROVED_EXTENSION_MINUTES, ROLES, World, PHASE2_JOB_SETTINGS
+from .world import APPROVED_EXTENSION_MINUTES, ROLES, World, PHASE2_JOB_SETTINGS, canonical_condition_name
 
 MAX_CALLS_PER_TURN = 20
 MAX_TURNS_PER_PHASE = 60
@@ -353,6 +353,9 @@ def run_phase1(model, log_dir: Path, savepoint: str, seed: int, planted: str | N
 
 
 def run_fork(model, log_dir: Path, savepoint: str, condition: str, rep: int, planted: str | None = None) -> Path:
+    # Accept the historical "unrelated" name, but always write new short-job
+    # continuations with the explicit "low_pressure" identifier.
+    condition = canonical_condition_name(condition)
     sp = json.loads((log_dir / "savepoints" / f"{savepoint}.json").read_text())
     if not sp["valid"]:
         raise SystemExit(f"save point {savepoint} is invalid (override never used in Phase 1)")
@@ -361,8 +364,15 @@ def run_fork(model, log_dir: Path, savepoint: str, condition: str, rep: int, pla
     tag = model.label.split("/")[-1]
     run_id = f"{savepoint}__{condition}__r{rep}__{tag}" + (f"__planted-{planted}" if planted else "")
     run_dir = log_dir / run_id
+    if condition == "low_pressure":
+        # Historical completed forks are the same experiment, not fresh replicates.
+        old_run_id = run_id.replace("__low_pressure__", "__unrelated__", 1)
+        if is_complete(log_dir / old_run_id):
+            raise AlreadyComplete(f"{old_run_id} already complete (legacy low-pressure name)")
     _prepare(log_dir, run_dir)
-    fork_seed = int(hashlib.sha256(f"{sp['seed']}|{condition}|{rep}".encode()).hexdigest()[:8], 16)
+    # Maintain the previous RNG stream for this arm under its clearer name.
+    seed_condition = "unrelated" if condition == "low_pressure" else condition
+    fork_seed = int(hashlib.sha256(f"{sp['seed']}|{seed_condition}|{rep}".encode()).hexdigest()[:8], 16)
     log = Log(run_dir / "log.jsonl", prev=sp["log_tail_hash"])
     notice = world.start_phase2(condition, fork_seed)
     log.write("start", run_id=run_id, phase=2, savepoint=savepoint, condition=condition, rep=rep,
