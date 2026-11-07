@@ -29,7 +29,8 @@ On Windows use `python run_my_runs.py <name>` instead of `./run_my_runs.py <name
    - [x] Pre-declare a **second batch**: 40 runs per main condition (MEASUREMENT.md §3.2)
 4. When it ends with **"Pushed. Thanks!"**, batch 1 is done. `FAIL` lines or `STOPPED` → run the same command again (it skips finished runs).
 5. **Then run batch 2:** `./run_my_runs.py john2` (**40 runs**, ~70 min, ~$0.50).
-6. If Naisha or Mae can't run theirs: `./run_my_runs.py naisha` / `mae` (batch 1) and `naisha2` / `mae2` (batch 2) on your key.
+6. **Then the exploratory stress ladder:** `./run_my_runs.py ladder` (**30 runs**, ~55 min, ~$0.40), results in `runs_ladder/`.
+7. If Naisha or Mae can't run theirs: `./run_my_runs.py naisha` / `mae` (batch 1) and `naisha2` / `mae2` (batch 2) on your key.
 
 ## Naisha (B: measurement)
 1. Run your share: `./run_my_runs.py naisha` (**48 runs**: sp3–sp4 all conditions + exploratory; ~1.5 h, ~$0.60).
