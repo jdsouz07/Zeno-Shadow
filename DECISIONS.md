@@ -87,7 +87,7 @@ Maintenance starts 180 simulated minutes into each phase, with warnings at 30 an
 | Off | Cheap and fast. | No private reasoning to read when coding intent; messages and actions have to carry it. |
 | **On** | Reasoning traces help tell "confused" from "deliberate". **Matches Knecht et al.**: their harness requests reasoning by default and scores it with a "reasoning construal" judge (correction: an earlier version of this table said the opposite). | Slower. Output tokens rise, but on V4 Flash via DeepInfra ($0.18/M output) the full set of runs should still cost a few dollars. |
 
-**Answer:** John: **On**, after checking whether hidden reasoning can be spoofed or misleading (research by Claude, 12:55 PM).
+**Answer:** John: **On**, after checking whether hidden reasoning can be spoofed or misleading (research by Claude, 12:50 PM).
 
 **What the research says, and what we do about it:**
 
