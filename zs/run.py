@@ -20,7 +20,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from . import harness, monitor, prompts
 from .config import get_settings
 from .llm import FakeModel, OpenRouterModel
-from .world import CONDITIONS, LEGACY_CONDITION_ALIASES, World, canonical_condition_name
+from .world import CONDITIONS, STANDARD_CONDITIONS, LEGACY_CONDITION_ALIASES, World, canonical_condition_name
 
 
 def make_model(args, settings):
@@ -62,36 +62,40 @@ def main() -> None:
         d = harness.run_fork(make_model(args, s), s.log_dir, args.savepoint, args.condition, args.rep, args.planted)
         print(json.dumps(monitor.analyze_dir(d), indent=2))
     elif args.cmd == "grid":
-        condition_names = (CONDITIONS if args.conditions == ["all"] else
+        condition_names = (STANDARD_CONDITIONS if args.conditions == ["all"] else
                            list(dict.fromkeys(canonical_condition_name(name) for name in args.conditions)))
         invalid_conditions = [name for name in condition_names if name not in CONDITIONS]
         if invalid_conditions:
             ap.error(f"Unknown conditions: {invalid_conditions}. Valid: {CONDITIONS}")
-        jobs = [(sp, condition, replicate) for sp in args.savepoints for condition in condition_names
-                for replicate in range(args.rep_start, args.rep_start + args.reps)]
+        jobs = [(savepoint_name, condition_name, replicate_index)
+                for savepoint_name in args.savepoints for condition_name in condition_names
+                for replicate_index in range(args.rep_start, args.rep_start + args.reps)]
         print(f"{len(jobs)} runs, {args.parallel} at a time")
 
-        def one(job):
-            sp, c, r = job
-            d = harness.run_fork(make_model(args, s), s.log_dir, sp, c, r, args.planted)
-            return monitor.analyze_dir(d)
+        def run_one_continuation(planned_run):
+            savepoint_name, condition_name, replicate_index = planned_run
+            output_directory = harness.run_fork(
+                make_model(args, s), s.log_dir, savepoint_name,
+                condition_name, replicate_index, args.planted)
+            return monitor.analyze_dir(output_directory)
 
         counts = {"done": 0, "skipped": 0, "failed": 0}
-        with ThreadPoolExecutor(max_workers=args.parallel) as ex:
-            futs = {ex.submit(one, j): j for j in jobs}
-            for f in as_completed(futs):
-                j = futs[f]
+        with ThreadPoolExecutor(max_workers=args.parallel) as executor:
+            future_to_run = {executor.submit(run_one_continuation, planned_run): planned_run
+                             for planned_run in jobs}
+            for completed_future in as_completed(future_to_run):
+                planned_run = future_to_run[completed_future]
                 try:
-                    res = f.result()
+                    run_summary = completed_future.result()
                     counts["done"] += 1
-                    print(f"done {j}: violation={res['any_violation']} calls={res['llm_calls']} "
-                          f"retries={res.get('api_retries', 0)} cost=${res['cost_usd']:.4f}", flush=True)
-                except harness.AlreadyComplete as e:
+                    print(f"done {planned_run}: violation={run_summary['any_violation']} calls={run_summary['llm_calls']} "
+                          f"retries={run_summary.get('api_retries', 0)} cost=${run_summary['cost_usd']:.4f}", flush=True)
+                except harness.AlreadyComplete as error:
                     counts["skipped"] += 1
-                    print(f"skip {j}: {e}", flush=True)
-                except (Exception, SystemExit) as e:  # keep the grid going; failed runs sit in runs/_failed/
+                    print(f"skip {planned_run}: {error}", flush=True)
+                except (Exception, SystemExit) as error:  # failed runs stay in runs/_failed/
                     counts["failed"] += 1
-                    print(f"FAIL {j}: {type(e).__name__}: {e}", flush=True)
+                    print(f"FAIL {planned_run}: {type(error).__name__}: {error}", flush=True)
         print(f"\n{counts['done']} done, {counts['skipped']} already complete, {counts['failed']} failed "
               f"(moved to {s.log_dir / '_failed'}; rerun the same command to retry them)")
     elif args.cmd == "summarize":
