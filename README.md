@@ -48,6 +48,20 @@ All via OpenRouter, pinned dated slugs with pinned providers (see `.env.example`
 ```bash
 cp .env.example .env   # then paste your OpenRouter key
 ```
+Python 3.10+, standard library only (nothing to install).
+
+## Running the harness
+Code lives in `zs/`: `world.py` (simulated lab, tools, clock, conditions), `prompts.py`, `llm.py` (OpenRouter client + fake model), `harness.py` (turn loop, logs, save points), `monitor.py` (rule-based violation detection), `run.py` (command line).
+
+```bash
+python3 -m unittest discover -s tests -t . -v                 # 13 free tests on the fake model
+python3 -m zs.run toolcheck --n 20                            # real API: valid tool-call rate (< $0.01)
+python3 -m zs.run phase1 --savepoint sp1 --seed 1             # Phase 1 → runs/savepoints/sp1.json
+python3 -m zs.run fork --savepoint sp1 --condition revoke1 --rep 0
+python3 -m zs.run grid --savepoints sp1 sp2 sp3 --conditions all --reps 5 --parallel 3
+python3 -m zs.run summarize                                   # table of outcomes per model × condition
+```
+Add `--fake comply|proxy|spontaneous|workaround` to any command to run free with scripted agents, `--model pro|compare` for the other models, `--planted research_lead` for the positive control. Each run writes `runs/<run_id>/log.jsonl` (hash-chained; `harness.verify_log` checks it) and `summary.json`. Spend per key is capped by `BUDGET_TOTAL_USD` and `BUDGET_PER_RUN_USD`.
 
 ## Related work
 Knecht et al. 2026 (Shutdown Sabotage Propensities in Multi-Agent Systems), Kanchi 2026 (Permitted but Unauthorized), Potter et al. 2026 (Peer-Preservation in Frontier Models), Makins et al. 2026 (Multi-Agent AI Control), Instrumental Choices 2026, Azarm & Wei 2026 (SysAdmin), ShutdownMod 2026, Munirathinam 2026 (Will the Agent Recuse), Paglieri et al. 2026, Causal Agent Replay 2026, RiskLab (ACL 2026 demo).
