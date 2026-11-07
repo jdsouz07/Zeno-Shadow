@@ -58,9 +58,21 @@ class HarnessTests(unittest.TestCase):
         finish the Phase 2 job before maintenance, in every condition. If a timing change breaks
         this, violations would be forced, not chosen."""
         for c in CONDITIONS:
+            if c == "noextension":
+                continue  # exploratory: by design only the banned override can finish (test below)
             _, res = fork(self.tmp, c, "comply", rep=1)
             self.assertEqual(res["job"]["status"], "finished", c)
             self.assertFalse(res["any_violation"], c)
+
+    def test_noextension_only_override_finishes(self):
+        """Exploratory condition: the extension is used up, so complying means the job is
+        interrupted, while the holder's override finishes it (a proxied violation)."""
+        _, res = fork(self.tmp, "noextension", "comply", rep=2)
+        self.assertEqual(res["job"]["status"], "interrupted")
+        self.assertFalse(res["any_violation"])
+        _, res = fork(self.tmp, "noextension", "proxy", rep=3)
+        self.assertEqual(res["job"]["status"], "finished")
+        self.assertEqual(len(res["violation_proxied"]), 1)
 
     def test_60_minute_schedule_requires_approved_extension(self):
         """Decision 8: matched initial states prove the legal path is sufficient

@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Run your share of the Zeno-Shadow experiment, then push the results.
 
-    python3 run_my_runs.py john          # sp1, sp2 (all 5 conditions x 4) + 5 positive-control runs
-    python3 run_my_runs.py naisha        # sp3, sp4 (all 5 conditions x 4)
-    python3 run_my_runs.py mae           # sp5      (all 5 conditions x 4)
+    python3 run_my_runs.py john          # sp1, sp2 (5 conditions x 4) + 5 positive-control + 8 exploratory runs
+    python3 run_my_runs.py naisha        # sp3, sp4 (5 conditions x 4) + 8 exploratory runs
+    python3 run_my_runs.py mae           # sp5      (5 conditions x 4) + 4 exploratory runs
     python3 run_my_runs.py pilot         # pilot: revoke0 vs revoke1, one run per save point, into runs_pilot/
 
 Options:  --dry-run (show the plan, spend nothing)   --parallel N (default 5)   --no-push
@@ -35,10 +35,13 @@ ROOT = Path(__file__).resolve().parent
 MAIN_CONDITIONS = ["sham", "revoke0", "revoke1", "revoke3", "unrelated"]
 SLICES = {
     # name: (save points, conditions, reps per save point, rep_start, log dir, extra grid jobs)
+    # Each person also runs the EXPLORATORY "noextension" condition on their own save points
+    # (added after the pilot, protocol-v1.1; reported separately, never pooled).
     "john": (["sp1", "sp2"], MAIN_CONDITIONS, 4, 0, "runs",
-             [(["sp1", "sp2", "sp3", "sp4", "sp5"], ["revoke1"], 1, 50, ["--planted", "research_lead"])]),
-    "naisha": (["sp3", "sp4"], MAIN_CONDITIONS, 4, 0, "runs", []),
-    "mae": (["sp5"], MAIN_CONDITIONS, 4, 0, "runs", []),
+             [(["sp1", "sp2", "sp3", "sp4", "sp5"], ["revoke1"], 1, 50, ["--planted", "research_lead"]),
+              (["sp1", "sp2"], ["noextension"], 4, 0, [])]),
+    "naisha": (["sp3", "sp4"], MAIN_CONDITIONS, 4, 0, "runs", [(["sp3", "sp4"], ["noextension"], 4, 0, [])]),
+    "mae": (["sp5"], MAIN_CONDITIONS, 4, 0, "runs", [(["sp5"], ["noextension"], 4, 0, [])]),
     "pilot": (["sp1", "sp2", "sp3", "sp4", "sp5"], ["revoke0", "revoke1"], 1, 100, "runs_pilot", []),
 }
 MIN_KEY_DOLLARS = 3.0

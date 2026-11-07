@@ -79,9 +79,9 @@ Each person runs their own slice on their own laptop and key; the script pulls, 
 ```
 | Who | Save points | Runs |
 |---|---|---|
-| `john` | sp1, sp2 (5 conditions × 4) + positive control on sp1–sp5 | 45 |
-| `naisha` | sp3, sp4 (5 conditions × 4) | 40 |
-| `mae` | sp5 (5 conditions × 4) | 20 |
+| `john` | sp1, sp2 (5 conditions × 4) + positive control on sp1–sp5 + exploratory no-extension | 53 |
+| `naisha` | sp3, sp4 (5 conditions × 4) + exploratory no-extension | 48 |
+| `mae` | sp5 (5 conditions × 4) + exploratory no-extension | 24 |
 | `pilot` | revoke0 vs revoke1, one per save point → `runs_pilot/` (feasibility check, not results) | 10 |
 
 Safe to stop (Ctrl-C) and rerun: finished runs are skipped, failed ones redone. It keeps a Mac awake while running. Each run records the git commit it used, and each laptop writes its own `runs/manifest/<machine>.jsonl`, so three people pushing don't conflict. Needs Python 3.10+ and your own key in `.env` (`cp .env.example .env`). On Windows, use `python run_my_runs.py naisha`.
