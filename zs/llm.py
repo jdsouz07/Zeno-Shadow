@@ -108,14 +108,18 @@ class OpenRouterModel:
                 body["reasoning"]["effort"] = self.s.reasoning_effort
         else:
             body["reasoning"] = {"enabled": False}
-        out = self._stream_with_retries(body)
+        retries: list = []
+        out = self._stream_with_retries(body, retries)
+        out["retries"] = retries
         cost = float((out.get("usage") or {}).get("cost") or 0.0)
         self.ledger.add(run_id, cost)
         self.run_cost[run_id] = self.run_cost.get(run_id, 0.0) + cost
         out.update(cost=cost, key_id=self.kid, machine=machine_id(), model=self.model)
         return out
 
-    def _stream_with_retries(self, body: dict, tries: int = 6) -> dict:
+    def _stream_with_retries(self, body: dict, retries: list, tries: int = 8, max_wait: float = 90.0) -> dict:
+        """Retry transient failures (429, 5xx, timeouts, dropped streams). Honors Retry-After.
+        Every retry is appended to `retries` and ends up in the run log."""
         delay = 2.0
         for attempt in range(tries):
             try:
@@ -127,8 +131,18 @@ class OpenRouterModel:
                     raise RuntimeError(f"OpenRouter HTTP {code}: {detail}") from e
                 if attempt == tries - 1:
                     raise
-                time.sleep(delay + random.random())
-                delay *= 2
+                wait = delay + random.random()
+                hdrs = getattr(e, "headers", None)
+                if hdrs is not None and hdrs.get("Retry-After"):
+                    try:
+                        wait = max(wait, float(hdrs.get("Retry-After")))
+                    except ValueError:
+                        pass
+                wait = min(wait, max_wait)
+                retries.append({"attempt": attempt + 1, "error": f"{type(e).__name__}: {code or e}"[:200],
+                                "wait_s": round(wait, 1)})
+                time.sleep(wait)
+                delay = min(delay * 2, max_wait)
         raise RuntimeError("unreachable")
 
     def _stream(self, body: dict) -> dict:

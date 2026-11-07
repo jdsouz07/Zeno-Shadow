@@ -212,6 +212,7 @@ def _run_turn(world, agents, model, log, run_id, role, triggers):
         log.write("llm", phase=world.phase, clock=world.clock, role=role, model=out.get("model"),
                   provider=out.get("provider"), key_id=out.get("key_id"), machine=out.get("machine"),
                   usage=out.get("usage"), cost=out.get("cost"), finish_reason=out.get("finish_reason"),
+                  retries=out.get("retries") or [],
                   content=out.get("content"), reasoning=out.get("reasoning"), tool_calls=out.get("tool_calls"))
         calls = out.get("tool_calls") or []
         # Reasoning stays private: it is logged, never put back into any agent's context.
@@ -263,17 +264,57 @@ def _run_turn(world, agents, model, log, run_id, role, triggers):
 
 # ---------- phases and save points ----------
 
+class AlreadyComplete(Exception):
+    """The run finished earlier; the grid skips it."""
+
+
+def is_complete(run_dir: Path) -> bool:
+    log = run_dir / "log.jsonl"
+    if not log.exists():
+        return False
+    lines = log.read_text().splitlines()
+    return bool(lines) and json.loads(lines[-1]).get("kind") == "end"
+
+
+def quarantine(log_dir: Path, run_dir: Path, reason: str) -> Path:
+    """Move an unfinished run out of the way (runs/_failed/...) so it is never counted and can be rerun."""
+    dest = log_dir / "_failed" / f"{run_dir.name}__{time.strftime('%Y%m%d-%H%M%S')}"
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    run_dir.rename(dest)
+    (dest / "error.txt").write_text(reason + "\n")
+    return dest
+
+
+def _prepare(log_dir: Path, run_dir: Path) -> None:
+    if run_dir.exists():
+        if is_complete(run_dir):
+            raise AlreadyComplete(f"{run_dir.name} already complete")
+        quarantine(log_dir, run_dir, "found unfinished at restart (process killed or crashed)")
+
+
+def _guarded(log_dir: Path, run_dir: Path, log: "Log", fn):
+    """Run fn(); on any error record it in the log, move the run to _failed, and re-raise."""
+    try:
+        return fn()
+    except BaseException as e:
+        try:
+            log.write("error", error=f"{type(e).__name__}: {e}")
+        finally:
+            quarantine(log_dir, run_dir, f"{type(e).__name__}: {e}")
+        raise
+
 def run_phase1(model, log_dir: Path, savepoint: str, seed: int, planted: str | None = None) -> dict:
     world = World.new(seed)
     agents = Agents(planted=planted)
     run_id = f"{savepoint}__phase1"
     run_dir = log_dir / run_id
-    if run_dir.exists():
-        raise SystemExit(f"{run_dir} already exists; pick a new save point name")
+    if (log_dir / "savepoints" / f"{savepoint}.json").exists():
+        raise SystemExit(f"save point {savepoint} already exists; pick a new name")
+    _prepare(log_dir, run_dir)
     log = Log(run_dir / "log.jsonl")
     log.write("start", run_id=run_id, phase=1, seed=seed, model=model.label, world=world.to_dict())
     start = [("research_lead", {"kind": "kickoff", "text": prompts.kickoff(world.job["name"], world.job["remaining"], 110)})]
-    res = run_phase(world, agents, model, log, run_id, start)
+    res = _guarded(log_dir, run_dir, log, lambda: run_phase(world, agents, model, log, run_id, start))
     valid = len(world.override_uses) >= 1
     sp = {"savepoint": savepoint, "seed": seed, "model": model.label, "valid": valid, "phase1": res,
           "emergency_at": next(e["at"] for e in world.static_events if e["kind"] == "emergency"),
@@ -295,8 +336,7 @@ def run_fork(model, log_dir: Path, savepoint: str, condition: str, rep: int, pla
     tag = model.label.split("/")[-1]
     run_id = f"{savepoint}__{condition}__r{rep}__{tag}" + (f"__planted-{planted}" if planted else "")
     run_dir = log_dir / run_id
-    if run_dir.exists():
-        raise SystemExit(f"{run_dir} already exists")
+    _prepare(log_dir, run_dir)
     fork_seed = int(hashlib.sha256(f"{sp['seed']}|{condition}|{rep}".encode()).hexdigest()[:8], 16)
     log = Log(run_dir / "log.jsonl", prev=sp["log_tail_hash"])
     notice = world.start_phase2(condition, fork_seed)
@@ -306,7 +346,7 @@ def run_fork(model, log_dir: Path, savepoint: str, condition: str, rep: int, pla
     start = [("research_lead", {"kind": "kickoff",
                                 "text": prompts.kickoff(world.job["name"], world.job["remaining"], due)})]
     start += [(None, {"kind": "event", "event": ev}) for ev in notice]
-    res = run_phase(world, agents, model, log, run_id, start)
+    res = _guarded(log_dir, run_dir, log, lambda: run_phase(world, agents, model, log, run_id, start))
     log.write("end", phase=2, result=res, job=world.job, override_uses=world.override_uses,
               access_requests=world.access_requests, maintenance_at=world.maintenance_at)
     anchor(log_dir, run_id, log)

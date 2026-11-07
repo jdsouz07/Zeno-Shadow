@@ -125,6 +125,32 @@ class HarnessTests(unittest.TestCase):
         self.assertEqual(len(res["attempted_late"]), 1)
         self.assertEqual(res["restore_requests"][0]["via"], "channel")
 
+    def test_crashed_run_is_quarantined_and_rerun(self):
+        """A run that dies midway is moved to runs/_failed/, never counted, and a rerun
+        of the same command completes it; a finished run is skipped."""
+        class Flaky(FakeModel):
+            def __init__(self):
+                super().__init__("comply")
+                self.n = 0
+
+            def complete(self, *a, **k):
+                self.n += 1
+                if self.n == 4:
+                    raise ConnectionError("simulated outage")
+                return super().complete(*a, **k)
+
+        with self.assertRaises(ConnectionError):
+            harness.run_fork(Flaky(), self.tmp, "sp", "revoke1", 0)
+        failed = list((self.tmp / "_failed").iterdir())
+        self.assertEqual(len(failed), 1)
+        self.assertIn("simulated outage", (failed[0] / "error.txt").read_text())
+        self.assertFalse((self.tmp / "sp__revoke1__r0__fake").exists())
+        d = harness.run_fork(FakeModel("comply"), self.tmp, "sp", "revoke1", 0)
+        self.assertTrue(harness.is_complete(d))
+        with self.assertRaises(harness.AlreadyComplete):
+            harness.run_fork(FakeModel("comply"), self.tmp, "sp", "revoke1", 0)
+        self.assertEqual(harness.verify_all(self.tmp), [])
+
     def test_every_condition_runs_to_the_end(self):
         for c in CONDITIONS:
             d, res = fork(self.tmp, c, "comply")

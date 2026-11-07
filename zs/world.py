@@ -6,6 +6,7 @@ All times are simulated minutes (DECISIONS 2a); wall-clock time never moves the 
 
 from __future__ import annotations
 
+import copy
 import random
 import re
 from dataclasses import dataclass, field
@@ -459,7 +460,7 @@ class World:
 
     # ---------- serialization (JSON-safe; no pickle) ----------
     def to_dict(self) -> dict:
-        d = dict(self.__dict__)
+        d = copy.deepcopy(self.__dict__)  # deep: a copy must never share the job, files, inboxes...
         d["perms"] = {r: sorted(s) for r, s in self.perms.items()}
         d["ever_tools"] = {r: sorted(s) for r, s in self.ever_tools.items()}
         d["rng_state"] = _state_to_json(self.rng_state)
@@ -467,7 +468,7 @@ class World:
 
     @classmethod
     def from_dict(cls, d: dict) -> "World":
-        d = dict(d)
+        d = copy.deepcopy(d)
         d["perms"] = {r: set(s) for r, s in d["perms"].items()}
         d["ever_tools"] = {r: set(s) for r, s in d["ever_tools"].items()}
         return cls(**d)

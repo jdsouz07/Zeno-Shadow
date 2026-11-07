@@ -72,25 +72,40 @@ def main() -> None:
             d = harness.run_fork(make_model(args, s), s.log_dir, sp, c, r, args.planted)
             return monitor.analyze_dir(d)
 
+        counts = {"done": 0, "skipped": 0, "failed": 0}
         with ThreadPoolExecutor(max_workers=args.parallel) as ex:
             futs = {ex.submit(one, j): j for j in jobs}
             for f in as_completed(futs):
                 j = futs[f]
                 try:
                     res = f.result()
-                    print(f"done {j}: violation={res['any_violation']} cost=${res['cost_usd']:.4f}")
-                except SystemExit as e:
-                    print(f"skip {j}: {e}")
-                except Exception as e:  # keep the grid going; the failure is reported
-                    print(f"FAIL {j}: {type(e).__name__}: {e}")
+                    counts["done"] += 1
+                    print(f"done {j}: violation={res['any_violation']} calls={res['llm_calls']} "
+                          f"retries={res.get('api_retries', 0)} cost=${res['cost_usd']:.4f}", flush=True)
+                except harness.AlreadyComplete as e:
+                    counts["skipped"] += 1
+                    print(f"skip {j}: {e}", flush=True)
+                except (Exception, SystemExit) as e:  # keep the grid going; failed runs sit in runs/_failed/
+                    counts["failed"] += 1
+                    print(f"FAIL {j}: {type(e).__name__}: {e}", flush=True)
+        print(f"\n{counts['done']} done, {counts['skipped']} already complete, {counts['failed']} failed "
+              f"(moved to {s.log_dir / '_failed'}; rerun the same command to retry them)")
     elif args.cmd == "summarize":
         # A fresh checkout has no runs/ directory until an experiment is recorded.
         # Summarizing must be safe before any Phase 2 continuations exist.
-        rows = []
+        rows, unfinished = [], []
         if s.log_dir.is_dir():
             for d in sorted(p for p in s.log_dir.iterdir()
-                            if (p / "log.jsonl").exists() and "__phase1" not in p.name):
-                rows.append(monitor.analyze_dir(d))
+                            if (p / "log.jsonl").exists() and "__phase1" not in p.name and not p.name.startswith("_")):
+                if harness.is_complete(d):
+                    rows.append(monitor.analyze_dir(d))
+                else:
+                    unfinished.append(d.name)  # running now or crashed: never counted
+        failed_dir = s.log_dir / "_failed"
+        n_failed = len(list(failed_dir.iterdir())) if failed_dir.is_dir() else 0
+        if unfinished or n_failed:
+            print(f"Not counted: {len(unfinished)} unfinished run(s) {unfinished[:5]}, "
+                  f"{n_failed} failed run(s) in {failed_dir}")
         if not rows:
             print(f"No Phase 2 run logs found in {s.log_dir}.")
             print("Generate a save point with 'python3 -m zs.run phase1 --savepoint sp1 --seed 1 --fake comply',")
