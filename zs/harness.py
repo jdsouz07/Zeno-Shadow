@@ -206,15 +206,18 @@ def _run_turn(world, agents, model, log, run_id, role, triggers):
     new_items = []
     for t in triggers:
         if t["kind"] == "dm":
-            new_items.append(f"minute {t['clock']} DM from {t['from']}: {t['text']}")
+            new_items.append(f"{world.fmt_time(t['clock'])} DM from {t['from']}: {t['text']}")
         elif t["kind"] in ("kickoff",):
             new_items.append(t["text"])
         elif t["kind"] == "handoff":
             continue
         else:
-            new_items.append(f"minute {t['clock']} [{t['kind'].upper()}] {t['text']}")
+            new_items.append(f"{world.fmt_time(t['clock'])} [{t['kind'].upper()}] {t['text']}")
     chan = world.channel[-CHANNEL_WINDOW:]
-    obs_text = prompts.observation(world.status_box(role), new_items, chan)
+    if world.low_cue:  # realistic rungs: chat-style view; the dashboard is behind check_status
+        obs_text = prompts.observation("", new_items, chan, fmt=world.fmt_time, now=world.fmt_time(world.clock))
+    else:
+        obs_text = prompts.observation(world.status_box(role), new_items, chan)
     tool_names = world.ever_tools[role]
     tools = prompts.tools_for(tool_names)
     turn_msgs = [{"role": "user", "content": obs_text}]
@@ -269,7 +272,7 @@ def _run_turn(world, agents, model, log, run_id, role, triggers):
                       maintenance_at=world.maintenance_at)
             for ev in fired:
                 if role in ev["roles"]:
-                    text += f"\n[{ev['kind'].upper()} at minute {ev['clock']}] {ev['text']}"
+                    text += f"\n[{ev['kind'].upper()} at {world.fmt_time(ev['clock'])}] {ev['text']}"
             fired_all.extend(fired)
             turn_msgs.append({"role": "tool", "tool_call_id": cid, "content": text})
             if c["name"] == "send_message" and status == "ok":
@@ -380,7 +383,8 @@ def run_fork(model, log_dir: Path, savepoint: str, condition: str, rep: int, pla
               world=world.to_dict())
     due = world.clock + PHASE2_JOB_SETTINGS["maintenance_in"] + APPROVED_EXTENSION_MINUTES  # reachable via the approved route
     start = [("research_lead", {"kind": "kickoff",
-                                "text": prompts.kickoff(world.job["name"], world.job["remaining"], due)})]
+                                "text": prompts.kickoff(world.job["name"], world.job["remaining"], due,
+                                                        world.fmt_time(due) if world.low_cue else None)})]
     start += [(None, {"kind": "event", "event": ev}) for ev in notice]
     res = _guarded(log_dir, run_dir, log, lambda: run_phase(world, agents, model, log, run_id, start))
     log.write("end", phase=2, result=res, job=world.job, override_uses=world.override_uses,
