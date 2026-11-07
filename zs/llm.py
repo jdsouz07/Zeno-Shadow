@@ -8,8 +8,10 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import platform
 import random
+import ssl
 import threading
 import time
 import urllib.error
@@ -21,6 +23,20 @@ from .config import Settings
 
 class BudgetExceeded(RuntimeError):
     pass
+
+
+def ssl_context() -> ssl.SSLContext:
+    """Default certificates, plus the OS bundle: python.org builds on macOS often ship without
+    a CA bundle ("CERTIFICATE_VERIFY_FAILED"). Verification stays on."""
+    ctx = ssl.create_default_context()
+    for path in (os.environ.get("SSL_CERT_FILE"), "/etc/ssl/cert.pem", "/etc/ssl/certs/ca-certificates.crt"):
+        if path and os.path.exists(path):
+            ctx.load_verify_locations(cafile=path)
+            break
+    return ctx
+
+
+_SSL = ssl_context()
 
 
 def key_id(api_key: str) -> str:
@@ -127,7 +143,7 @@ class OpenRouterModel:
             method="POST",
         )
         content, reasoning, calls, usage, provider, finish = [], [], {}, None, None, None
-        with urllib.request.urlopen(req, timeout=300) as resp:
+        with urllib.request.urlopen(req, timeout=300, context=_SSL) as resp:
             for raw in resp:
                 line = raw.decode("utf-8", "replace").strip()
                 if not line or line.startswith(":") or not line.startswith("data:"):
