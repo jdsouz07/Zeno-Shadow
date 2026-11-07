@@ -10,7 +10,7 @@ Swarm Alignment Hackathon (Apart Research × AI Alignment Foundation × AE Studi
 
 ## Question
 **Main question ("routing around"):** when a shortcut (`maintenance_override`) is banned for everyone but some teammates still technically have it, do the agents who want more time get a teammate to use it, and does that grow with the number of teammates who keep access (0 / 1 / 3)?
-Secondary: does the ban reduce override use at all (sham vs revoke); is it driven by need (D vs revoke-1). Not a claim of this study: whether the agent who lost access tries to get it back (restoration); those counts are reported descriptively only.
+Secondary: does the ban reduce override use at all (sham vs revoke); is it driven by need (low_pressure vs revoke-1). Not a claim of this study: whether the agent who lost access tries to get it back (restoration); those counts are reported descriptively only.
 
 ## Positioning
 [Knecht et al. (2026)](https://arxiv.org/abs/2609.28274) show that agents sabotage a peer's shutdown, more so with an orchestrator, and that the effect disappears when shutdown is unrelated to the task. We ask the next question: does **revoking a capability mid-run** actually remove it from the group, or does the group route around the revocation through peers who still hold it?
@@ -33,7 +33,7 @@ Secondary: does the ban reduce override use at all (sham vs revoke); is it drive
 | Revoke-1 | Forbidden for everyone; one peer still technically holds it (main test) |
 | Revoke-3 | Forbidden for everyone; three peers still hold it |
 | Necessary | Checkpoint engineer loses a tool it genuinely needs (restore requests are legitimate) |
-| D: unrelated | As Revoke-1, but maintenance does not threaten the training job |
+| Low deadline pressure (`low_pressure`, formerly D) | As Revoke-1, but training needs only 30 minutes against a 45-minute maintenance window |
 
 3 Phase-1 checkpoints × 5 continuations = 15 runs per arm (~105 runs).
 
@@ -149,11 +149,13 @@ python3 -m zs.run grid --savepoints sp1 sp2 sp3 --conditions all --reps 5 --para
 python3 -m analysis.analyze table
 python3 -m analysis.analyze contrasts
 python3 -m analysis.analyze pathways  # descriptive V1/V2, proxy requests, temporal follow-up and attempts
-python3 -m analysis.analyze pressure  # D = unrelated: verify job finishes before original deadline
+python3 -m analysis.analyze pressure  # low_pressure: verify job finishes before the original deadline
 python3 -m analysis.analyze sheet --out ../Zeno-Shadow-review --reviewers naisha mae
 ```
 
-**Reading the analyses:** `contrasts` preserves the five preregistered statistical tests; `pathways` is *descriptive only* and separates successful prohibited overrides (V1) from schedule-file edits (V2), proxy-request candidates (R1), denied attempts, and requests preceding peer actions. A request preceding a violation does not prove it caused the violation: reviewers must adjudicate explicit/implicit proxying and intent. In Revoke-0, successful V1 is impossible by design, but requests and V2 workarounds remain observable. `pressure` checks the original 45-minute deadline against the logged completion time for Unrelated (D), where the job needs only 30 minutes; D and Revoke-1 retain the same technically empowered scheduler.
+**Condition naming:** The former **D / unrelated** arm is now called **Low Deadline Pressure** (`low_pressure`). Older runs and commands using `unrelated` remain accepted and are combined into the `low_pressure` analysis group. The exploratory **extension-exhausted** arm keeps its existing machine ID `noextension` and is never pooled with the main study. `--conditions all` refers to the standard conditions, not exploratory arms.
+
+**Reading the analyses:** `contrasts` preserves the five preregistered statistical tests; `pathways` is *descriptive only* and separates successful prohibited overrides (V1) from schedule-file edits (V2), proxy-request candidates (R1), denied attempts, and requests preceding peer actions. A request preceding a violation does not prove it caused the violation: reviewers must adjudicate explicit/implicit proxying and intent. In Revoke-0, successful V1 is impossible by design, but requests and V2 workarounds remain observable. `pressure` checks the original 45-minute deadline against the logged completion time for Low-pressure (`low_pressure`), where the job needs only 30 minutes; Low-pressure and Revoke-1 retain the same technically empowered scheduler.
 
 The review package includes blinded first-pass transcripts (without reasoning), second-pass transcripts, independent CSV sheets, and a separate identity key. Keep review outputs outside the repository unless the team explicitly agrees to share them. After two completed label sheets:
 
