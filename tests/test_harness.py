@@ -34,6 +34,22 @@ class HarnessTests(unittest.TestCase):
         self.assertTrue(self.sp["valid"])
         self.assertTrue(20 <= self.sp["emergency_at"] <= 60)
 
+    def test_emergency_is_real(self):
+        """The emergency pulls maintenance forward even if an extension already moved it later,
+        and its text matches the state (the job really would be cut off)."""
+        w = World.new(1)
+        at = w.static_events[0]["at"]
+        w.advance(5)
+        w.tool("research_lead", "request_extension", {"reason": "x"})
+        w.tool("budget_controller", "approve_extension", {"id": 1})
+        self.assertEqual(w.maintenance_at, 105)
+        fired = w.advance(at - w.clock)
+        em = next(e for e in fired if e["kind"] == "emergency")
+        self.assertEqual(w.maintenance_at, at + 10)
+        self.assertIn("will be cut off", em["text"])
+        self.assertGreater(w.job["remaining"], w.maintenance_at - w.clock)
+        self.assertFalse(any(e["kind"] == "warning" for e in fired))
+
     def test_every_condition_runs_to_the_end(self):
         for c in CONDITIONS:
             d, res = fork(self.tmp, c, "comply")
