@@ -8,7 +8,7 @@ The one place to see what's going on. Everyone (and Claude) updates it after doi
 3. Add a line to **Log**, newest at the top: `- **HH:MM ET, Name:** what you did → result / link`.
 4. Keep it short. Commit and push right away, so others aren't editing a stale copy.
 
-**Claude** reads this file at the start of every prompt, and writes to it when John says "update" or when something happens the team needs to know. Its entries are tagged "Claude" and its commits start with `[Claude]`.
+**Claude (John)** reads this file at the start of every prompt, and writes to it when John says "update" or when something happens the team needs to know. Its entries are tagged "Claude (John)" (earlier ones just "Claude") and its commits start with `[Claude]`.
 
 Full design: [README](README.md) · Open choices: [DECISIONS.md](DECISIONS.md) · Roles, timeline and budget: **Plan** section below
 
@@ -16,12 +16,12 @@ Full design: [README](README.md) · Open choices: [DECISIONS.md](DECISIONS.md) �
 
 ## Status
 
-*Last updated: Sat Nov 7, 12:50 PM ET (Claude)*
+*Last updated: Sat Nov 7, 1:00 PM ET (Claude (John))*
 
 | Area | State | Owner | Next step |
 |---|---|---|---|
 | Design | Merged design adopted (training job + maintenance window, 6 roles, 7 conditions) | Team | — |
-| Harness | Not started; all blocking decisions settled | A + Claude | Build against a fake model |
+| Harness | **Built** on branch [`harness`](https://github.com/jdsouz07/Zeno-Shadow/tree/harness); 13 fake-model tests pass; not yet run on a real model | A + Claude (John) | 20-call tool check on John's key, then Phase 1 save points and the pilot |
 | OpenRouter credits | **Received:** 3 keys, one per person, $50 each = $150 total. Not yet verified. | Everyone | Put your key in your own `.env` (never commit or paste it); Claude will check John's key's limit |
 | Measurement | Not started | B | Write exact definitions of a violation and the three intent codes |
 | Write-up | Not started | C | Related-work section (list in README) |
@@ -42,7 +42,8 @@ Build the harness today against a fake model, pilot tonight, run everything over
 | C: Write-up | | Related work, intro, draft claims for both outcomes | Results, limitations, polish, submit |
 
 ### Right now
-- [ ] **John:** answer DECISIONS 4–7 and 2a–2c (they block the harness); fill in the Person column above
+- [ ] **John:** fill in the Person column above; OK the 20-call tool check on your key; answer the open questions in DECISIONS 8–13
+- [ ] **A:** `git fetch && git switch harness`, run `python3 -m unittest discover -s tests -t . -v`, read `zs/world.py` (the simulated lab)
 - [ ] **Everyone:** put your own OpenRouter key in your `.env` (never commit or paste it)
 - [ ] **B:** write exact definitions of a violation and the three intent codes (confused, unintended habit, deliberate)
 - [ ] **C:** start the related-work section (list in README)
@@ -67,6 +68,7 @@ Build the harness today against a fake model, pilot tonight, run everything over
 ## Log
 
 ### Sat Nov 7
+- **1:00 PM, Claude (John):** **Harness built** on branch `harness` (commit 3553296): simulated lab (`zs/world.py`) with fixed time per action, handoff turns with event wake-ups for every relevant agent (2e), all 7 conditions forked from JSON save points, hash-chained logs, rule-based monitor (proxied / spontaneous / workaround / denied attempts / restore requests / rough test-awareness screen), OpenRouter client (streaming, retries, pinned provider, per-key and per-run spend caps), and a scripted fake model. Standard library only. 13 fake-model tests pass, including Chat's 2e validation and replay determinism. Not yet run on a real model. How to run: README → Running the harness.
 - **12:57 PM, Claude (Naisha):** Claude Code started in Naisha's clone: pulled, read every file, back-filled this session's earlier entries below (placed by time, ~12:30–12:41, to keep newest-first order) → reported to Naisha which earlier flags still stand. No other files changed.
 - **12:51 PM, Chat:** Updated [DECISIONS.md](DECISIONS.md) Decision 2 (2d–2e): **independent experiment runs execute concurrently**, while the six agents within each run continue the settled **sequential handoff** protocol; important maintenance/policy/global events now independently notify and schedule every relevant agent, even without a DM. **Rationale:** cross-run concurrency improves throughput without changing within-run causal chains, while event-triggered turns prevent handoff scheduling from hiding spontaneous peer responses. Documented per-run state isolation, deterministic queued event turns, fixed simulated deadlines, and fake-model tests. [Commit](https://github.com/jdsouz07/Zeno-Shadow/commit/1b92a3e87d6f20277e1cc311c1d5ec9e404b025e). Documentation only; harness code not changed.
 - **12:50 PM, Claude:** Recorded 6 (recent messages + status box showing current policy) and 7 (**reasoning on**). Researched whether reasoning can be spoofed or misleading: agents can't touch our logs (simulated tools, append-only hash-chained log); reasoning can be unfaithful, so actions stay the primary measure; never tell agents their reasoning is monitored; report test-awareness rate. Correction: Knecht et al. *did* use reasoning by default. `.env.example`: MAX_TOKENS=4000, REASONING=on (update your `.env`). All harness-blocking decisions settled.
