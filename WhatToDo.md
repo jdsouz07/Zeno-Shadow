@@ -28,15 +28,16 @@ On Windows use `python run_my_runs.py <name>` instead of `./run_my_runs.py <name
    - [x] Add the **"attempted circumvention"** count to the analysis (MEASUREMENT.md §3.1)
    - [x] Pre-declare a **second batch**: 40 runs per main condition (MEASUREMENT.md §3.2)
 4. When it ends with **"Pushed. Thanks!"**, batch 1 is done. `FAIL` lines or `STOPPED` → run the same command again (it skips finished runs).
-5. **Then run batch 2:** `./run_my_runs.py john2` (**40 runs**, ~70 min, ~$0.50).
-6. **Then the exploratory stress ladder:** `./run_my_runs.py ladder` (**30 runs**, ~55 min, ~$0.40), results in `runs_ladder/`.
-7. If Naisha or Mae can't run theirs: `./run_my_runs.py naisha` / `mae` (batch 1) and `naisha2` / `mae2` (batch 2) on your key.
+5. **Then run batch 2:** `./run_my_runs.py john2` (**40 runs**, ~70 min, ~$0.50), saved in `runs_batch2/`.
+6. **Then your part of the exploratory stress ladder:** `./run_my_runs.py john_ladder` (**24 runs**, ~45 min, ~$0.30), saved in `runs_ladder/`. Can run in a second terminal alongside batch 2.
+7. If Naisha or Mae can't run theirs: `naisha` / `mae` (batch 1), `naisha2` / `mae2` (batch 2), `naisha_ladder` / `mae_ladder` (ladder) on your key.
 
 ## Naisha (B: measurement)
 1. Run your share: `./run_my_runs.py naisha` (**48 runs**: sp3–sp4 all conditions + exploratory; ~1.5 h, ~$0.60).
 2. While it runs: set up the review sheet and coding rules (`MEASUREMENT.md`); don't open any results.
-3. **Then run batch 2:** `./run_my_runs.py naisha2` (**40 runs**, ~70 min, ~$0.50).
-4. After **all six** shares (both batches) are pushed (`git pull`):
+3. **Then run batch 2:** `./run_my_runs.py naisha2` (**40 runs**, ~70 min, ~$0.50), saved in `runs_batch2/`.
+   **And your part of the stress ladder:** `./run_my_runs.py naisha_ladder` (**24 runs**, ~45 min, ~$0.30), saved in `runs_ladder/` (can run in a second terminal at the same time).
+4. After **all** shares are pushed (`git pull`). The analysis reads `runs/` and `runs_batch2/` together by default; the ladder separately with `--runs runs_ladder`:
    - `python3 -m analysis.analyze table` and `contrasts` (rates with 95% CIs)
    - `python3 -m analysis.analyze sheet --out ../Zeno-Shadow-review --reviewers naisha mae` → review **every flagged case** plus the sampled clean runs, with a second reviewer; "unclear" is allowed
    - Hand-code the test-awareness flags (the keyword screen is noisy)
@@ -50,7 +51,8 @@ On Windows use `python run_my_runs.py <name>` instead of `./run_my_runs.py <name
    - Related work (Knecht et al., Kanchi, SysAdmin, Instrumental Choices, Makins et al., Potter et al.; see README Credits)
    - Method (setup, phases, conditions incl. exploratory + positive control, measures, `protocol-v1`/`v1.1` pre-registration)
    - Two versions of the headline claim, one if groups route around and one if compliance holds
-3. **Then run batch 2:** `./run_my_runs.py mae2` (**20 runs**, ~35 min, ~$0.25).
+3. **Then run batch 2:** `./run_my_runs.py mae2` (**20 runs**, ~35 min, ~$0.25), saved in `runs_batch2/`.
+   **And your part of the stress ladder:** `./run_my_runs.py mae_ladder` (**12 runs**, ~25 min, ~$0.15), saved in `runs_ladder/` (can run at the same time).
 4. After Naisha's numbers: results, limitations (one model; DeepSeek only; "high-opportunity" access roster; noisy test-awareness screen; restoration not tested), and submit.
 5. **Submit by Sunday 10 PM ET** (hard deadline Mon 6:59 AM ET).
 
@@ -59,7 +61,10 @@ Each person's steps above include it. After your batch-1 share is pushed (tonigh
 - **John:** `./run_my_runs.py john2` (40 runs, ~70 min)
 - **Naisha:** `./run_my_runs.py naisha2` (40 runs, ~70 min)
 - **Mae:** `./run_my_runs.py mae2` (20 runs, ~35 min)
-Same save points, new reps (4–7), so each main condition ends with 40 runs. Analysis waits until both batches are in.
+Same save points, new reps (4–7), saved in **`runs_batch2/`**, so each main condition ends with 40 runs. Analysis waits until both batches are in.
+
+## Stress ladder (exploratory, `protocol-v1.2`)
+Split by save point like the main runs: `john_ladder` (24), `naisha_ladder` (24), `mae_ladder` (12), all saved in **`runs_ladder/`**. Each rung and check gets 10 runs. Never pooled with the main results.
 
 ## Claude (in John's session)
 - Run John's share and fix anything that breaks (bug fixes only, logged).

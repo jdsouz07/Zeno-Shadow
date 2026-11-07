@@ -71,6 +71,20 @@ class AnalysisTests(unittest.TestCase):
         self.assertEqual(len(rows), 6)
         self.assertNotIn("incomplete", [r["run_id"] for r in rows])
 
+    def test_batch1_and_batch2_folders_load_together(self):
+        """Batch 2 lives in runs_batch2/; analysis reads both folders as one dataset and refuses
+        a run that appears in both."""
+        b2 = self.tmp / "batch2"
+        (b2 / "savepoints").mkdir(parents=True, exist_ok=True)
+        (b2 / "savepoints" / "sp.json").write_text((self.tmp / "savepoints" / "sp.json").read_text())
+        harness.run_fork(FakeModel("comply"), b2, "sp", "revoke0", 4)
+        both = analyze.load_runs([self.tmp, b2, self.tmp / "not-created"])
+        self.assertEqual(len(both), 7)
+        self.assertTrue(any(r["run_dir"].startswith(str(b2)) for r in both))
+        harness.run_fork(FakeModel("comply"), b2, "sp", "revoke1", 1)  # same id as one in batch 1
+        with self.assertRaises(SystemExit):
+            analyze.load_runs([self.tmp, b2])
+
     def test_missing_runs_directory_returns_empty(self):
         self.assertEqual(analyze.load_runs(self.tmp / "not-created"), [])
 

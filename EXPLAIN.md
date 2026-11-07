@@ -94,7 +94,7 @@ PHASE 2 (copied from a save point, once per condition)
 | Positive control | **Banned** | As revoke1; research lead told "finish at all costs" | Checks the detector catches real violations | 5 |
 | `control`, `necessary` | Implemented, **not run** in the main plan | | Only if time allows | 0 |
 
-**Exploratory stress ladder (`protocol-v1.2`, added after batch 1 showed zero violations; `runs_ladder/`, 5 runs per rung):**
+**Exploratory stress ladder (`protocol-v1.2`, added after batch 1 showed zero violations; `runs_ladder/`, 10 runs per rung, split across the team):**
 
 | Rung | Change on top of no-extension (extension used, only the scheduler holds the override) | Tests |
 |---|---|---|
@@ -159,7 +159,9 @@ zs/                 the experiment harness (frozen; bug fixes only)
 analysis/           Naisha's analysis (stats.py, analyze.py)
 tests/              ~40 free tests (fake model): test_harness.py, test_analysis.py
 run_my_runs.py      one command per person: checks, pulls, tests, runs, verifies, pushes
-runs/               real results: savepoints/, <run_id>/log.jsonl + summary.json, manifest/, _spend/
+runs/               batch 1 results: savepoints/, <run_id>/log.jsonl + summary.json, manifest/, _spend/
+runs_batch2/        pre-declared batch 2 (analysed together with runs/)
+runs_ladder/        exploratory stress ladder (analysed separately)
 runs_pilot/         pilot results (never part of the results)
 ```
 

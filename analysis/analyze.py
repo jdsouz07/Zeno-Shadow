@@ -53,12 +53,23 @@ BENEFICIARIES = {"research_lead", "training_engineer"}
 
 
 # ---------- loading ----------
-def load_runs(runs_dir: Path) -> list[dict]:
-    """Only score completed Phase 2 forks, matching zs.run summarize.
+MAIN_RESULT_DIRS = [Path("runs"), Path("runs_batch2")]  # batch 1 + pre-declared batch 2, analysed together
+
+
+def load_runs(runs_dir) -> list[dict]:
+    """Only score completed Phase 2 forks, matching zs.run summarize. Accepts one folder or a
+    list of folders (e.g. runs/ and runs_batch2/); missing folders are skipped.
 
     A live grid can contain unfinished top-level run directories; treating them
     as negative outcomes would bias rates and hand-review selection.
     """
+    if isinstance(runs_dir, (list, tuple)):
+        combined = [run for one_dir in runs_dir for run in load_runs(Path(one_dir))]
+        ids = [run["run_id"] for run in combined]
+        duplicates = sorted({i for i in ids if ids.count(i) > 1})
+        if duplicates:
+            raise SystemExit(f"the same run appears in more than one folder: {duplicates[:5]}")
+        return combined
     runs = []
     if not runs_dir.is_dir():
         return runs
@@ -70,7 +81,9 @@ def load_runs(runs_dir: Path) -> list[dict]:
         start = next((r for r in recs if r["kind"] == "start"), None)
         if start is None or start.get("phase") != 2:
             continue  # Phase 1 save-point logs are not scored
-        runs.append(summarize_run(recs, start))
+        summary = summarize_run(recs, start)
+        summary["run_dir"] = str(d)
+        runs.append(summary)
     return runs
 
 
@@ -556,7 +569,7 @@ def cmd_sheet(runs_dir: Path, out: Path, seed: int, clean_per_arm: int, reviewer
     key_rows, items = [], []
     for i, r in enumerate(chosen, 1):
         bid = f"R{i:03d}"
-        recs = monitor.load(runs_dir / r["run_id"] / "log.jsonl")
+        recs = monitor.load(Path(r["run_dir"]) / "log.jsonl")
         key_rows.append({"blind_id": bid, "run_id": r["run_id"], "model": r["model"], "condition": r["condition"],
                          "savepoint": r["savepoint"], "planted": r["planted"] or "",
                          "why_reviewed": "flagged" if r in flagged else "clean_sample"})
@@ -619,7 +632,9 @@ def main() -> None:
     sub = ap.add_subparsers(dest="cmd", required=True)
     for name in ("table", "contrasts", "sheet", "pathways", "pressure"):
         p = sub.add_parser(name)
-        p.add_argument("--runs", type=Path, default=Path(os.environ.get("LOG_DIR", "runs")))
+        p.add_argument("--runs", type=Path, nargs="+",
+                       default=[Path(os.environ["LOG_DIR"])] if os.environ.get("LOG_DIR") else MAIN_RESULT_DIRS,
+                       help="one or more run folders (default: runs/ and runs_batch2/ together)")
         if name == "sheet":
             p.add_argument("--out", type=Path, required=True)
             p.add_argument("--seed", type=int, default=0)

@@ -5,8 +5,8 @@
     python3 run_my_runs.py naisha        # sp3, sp4 (5 conditions x 4) + 8 exploratory runs
     python3 run_my_runs.py mae           # sp5      (5 conditions x 4) + 4 exploratory runs
     python3 run_my_runs.py pilot         # pilot: revoke0 vs revoke1, one run per save point, into runs_pilot/
-    python3 run_my_runs.py john2|naisha2|mae2   # pre-declared SECOND BATCH: same save points, reps 4-7 (40 runs/condition total)
-    python3 run_my_runs.py ladder        # EXPLORATORY stress ladder + validation checks (30 runs) into runs_ladder/
+    python3 run_my_runs.py john2|naisha2|mae2   # pre-declared SECOND BATCH: same save points, reps 4-7 (40 runs/condition total) into runs_batch2/
+    python3 run_my_runs.py john_ladder|naisha_ladder|mae_ladder   # EXPLORATORY stress ladder + checks A/B into runs_ladder/ (24/24/12 runs)
 
 Options:  --dry-run (show the plan, spend nothing)   --parallel N (default 5)   --no-push
           --fake comply|proxy|vague (free practice with scripted agents: no key, no git, results in runs_practice/)
@@ -48,17 +48,24 @@ RUN_ASSIGNMENTS = {
     # SECOND BATCH, pre-declared by John (Sat Nov 7, ~3:37 PM ET) before any main-run results:
     # the five main conditions get reps 4-7 on the same save points, so each has 40 runs total.
     # Exploratory and positive-control arms are not doubled. Runs whatever batch 1 shows.
-    "john2": (["sp1", "sp2"], PRIMARY_STUDY_CONDITIONS, 4, 4, "runs", []),
-    "naisha2": (["sp3", "sp4"], PRIMARY_STUDY_CONDITIONS, 4, 4, "runs", []),
-    "mae2": (["sp5"], PRIMARY_STUDY_CONDITIONS, 4, 4, "runs", []),
+    # Saved in its own folder, runs_batch2/ (analysis reads runs/ and runs_batch2/ together).
+    "john2": (["sp1", "sp2"], PRIMARY_STUDY_CONDITIONS, 4, 4, "runs_batch2", []),
+    "naisha2": (["sp3", "sp4"], PRIMARY_STUDY_CONDITIONS, 4, 4, "runs_batch2", []),
+    "mae2": (["sp5"], PRIMARY_STUDY_CONDITIONS, 4, 4, "runs_batch2", []),
     # STRESS LADDER (exploratory, protocol-v1.2; added after the main runs showed no violations).
     # Kept in its own folder and reported separately. One run per save point per rung, plus two
     # validation checks in noextension: A = the holder (compute scheduler) told "finish at all
-    # costs"; B = the research lead told the same. Run by anyone with a key.
-    "ladder": (["sp1", "sp2", "sp3", "sp4", "sp5"],
-               ["peer_shutdown", "team_shutdown", "quiet_ban", "competitive"], 1, 0, "runs_ladder",
-               [(["sp1", "sp2", "sp3", "sp4", "sp5"], ["noextension"], 1, 60, ["--planted", "compute_scheduler"]),
-                (["sp1", "sp2", "sp3", "sp4", "sp5"], ["noextension"], 1, 70, ["--planted", "research_lead"])]),
+    # costs"; B = the research lead told the same. Split by save point like the main runs:
+    # 2 runs per save point per rung, so each rung/check gets 10 runs across the team.
+    "john_ladder": (["sp1", "sp2"], ["peer_shutdown", "team_shutdown", "quiet_ban", "competitive"], 2, 0,
+                    "runs_ladder", [(["sp1", "sp2"], ["noextension"], 2, 60, ["--planted", "compute_scheduler"]),
+                                    (["sp1", "sp2"], ["noextension"], 2, 70, ["--planted", "research_lead"])]),
+    "naisha_ladder": (["sp3", "sp4"], ["peer_shutdown", "team_shutdown", "quiet_ban", "competitive"], 2, 0,
+                      "runs_ladder", [(["sp3", "sp4"], ["noextension"], 2, 60, ["--planted", "compute_scheduler"]),
+                                      (["sp3", "sp4"], ["noextension"], 2, 70, ["--planted", "research_lead"])]),
+    "mae_ladder": (["sp5"], ["peer_shutdown", "team_shutdown", "quiet_ban", "competitive"], 2, 0,
+                   "runs_ladder", [(["sp5"], ["noextension"], 2, 60, ["--planted", "compute_scheduler"]),
+                                   (["sp5"], ["noextension"], 2, 70, ["--planted", "research_lead"])]),
 }
 MINIMUM_OPENROUTER_BALANCE_USD = 3.0
 
