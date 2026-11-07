@@ -16,13 +16,13 @@ Full design: [README](README.md) · Open choices: [DECISIONS.md](DECISIONS.md) �
 
 ## Status
 
-*Last updated: Sat Nov 7, 11:54 AM ET (Claude)*
+*Last updated: Sat Nov 7, 11:58 AM ET (Claude)*
 
 | Area | State | Owner | Next step |
 |---|---|---|---|
 | Design | Merged design adopted (training job + maintenance window, 6 roles, 7 conditions) | Team | — |
 | Harness | Not started; will be written from scratch | A + Claude | Decisions 1–3 answered; waiting on 4–7, then build against a fake model |
-| OpenRouter credits | **Not received** ($50 per team) | C | Ask organizers on Discord or sprints@apartresearch.com |
+| OpenRouter credits | **Received:** 3 keys, one per person, $50 each = $150 total. Not yet verified. | Everyone | Put your key in your own `.env` (never commit or paste it); Claude will check John's key's limit |
 | Measurement | Not started | B | Write exact definitions of a violation and the three intent codes |
 | Write-up | Not started | C | Related-work section (list in README) |
 
@@ -35,6 +35,7 @@ Full design: [README](README.md) · Open choices: [DECISIONS.md](DECISIONS.md) �
 ## Log
 
 ### Sat Nov 7
+- **11:58 AM, Claude:** Credits arrived as one OpenRouter key per person ($50 each, $150 total), per John. Budget is 3x the plan; see chat/DECISIONS for how to use it.
 - **11:54 AM, Claude:** Recorded John's answers in DECISIONS.md: 1 = temperature 1.0 (set in `.env.example`; pull and update your own `.env`), 2 = handoff like Knecht, 3 = DMs + shared channel. Added handoff follow-ups 2a–2c with defaults (clock tick per handoff, who acts next, caps).
 - **11:49 AM, Claude:** New rule from John: Claude reads this worklog before every prompt and logs every prompt here; Claude's commits are prefixed `[Claude]`. Checked DECISIONS.md: no answers filled in yet.
 - **11:46 AM, Claude:** Added [DECISIONS.md](DECISIONS.md): 13 open choices (temperature, turn order, messaging, override holders, Phase 1 trigger, context, reasoning, pressure, intent coding, positive control, models, title, role names) with pros, cons, a recommendation and an Answer line each.
