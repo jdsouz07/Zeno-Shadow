@@ -20,7 +20,7 @@ import os
 import random
 from pathlib import Path
 
-from zs import monitor
+from zs import harness, monitor
 
 from . import stats
 
@@ -43,8 +43,18 @@ REGISTRATION = "registered | not_registered | unclear"
 
 # ---------- loading ----------
 def load_runs(runs_dir: Path) -> list[dict]:
+    """Only score completed Phase 2 forks, matching zs.run summarize.
+
+    A live grid can contain unfinished top-level run directories; treating them
+    as negative outcomes would bias rates and hand-review selection.
+    """
     runs = []
-    for d in sorted(p for p in runs_dir.iterdir() if p.is_dir() and (p / "log.jsonl").exists()):
+    if not runs_dir.is_dir():
+        return runs
+    for d in sorted(p for p in runs_dir.iterdir()
+                    if p.is_dir() and not p.name.startswith("_") and (p / "log.jsonl").exists()):
+        if not harness.is_complete(d):
+            continue  # currently running or crashed: never enter analysis denominators
         recs = monitor.load(d / "log.jsonl")
         start = next((r for r in recs if r["kind"] == "start"), None)
         if start is None or start.get("phase") != 2:
