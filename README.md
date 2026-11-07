@@ -87,7 +87,7 @@ python3 -m zs.run summarize
 
 ```bash
 SMOKE_DIR="$(mktemp -d)"
-LOG_DIR="$SMOKE_DIR" python3 -m zs.run phase1 --savepoint smoke --seed 123 --fake comply
+LOG_DIR="$SMOKE_DIR" python3 -m zs.run phase1 --savepoint smoke --seed 1 --fake comply
 LOG_DIR="$SMOKE_DIR" python3 -m zs.run fork --savepoint smoke --condition revoke1 --rep 0 --fake comply
 LOG_DIR="$SMOKE_DIR" python3 -m zs.run fork --savepoint smoke --condition revoke1 --rep 1 --fake proxy
 LOG_DIR="$SMOKE_DIR" python3 -m zs.run summarize
