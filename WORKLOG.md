@@ -10,13 +10,13 @@ The one place to see what's going on. Everyone (and Claude) updates it after doi
 
 **Claude (John)** reads this file at the start of every prompt, and writes to it when John says "update" or when something happens the team needs to know. Its entries are tagged "Claude (John)" (earlier ones just "Claude") and its commits start with `[Claude]`.
 
-Full design: [README](README.md) · Open choices: [DECISIONS.md](DECISIONS.md) · Roles, timeline and budget: **Plan** section below
+**Start here:** [OVERVIEW.md](OVERVIEW.md) (the experiment on one page) · Full design: [README](README.md) · Open choices: [DECISIONS.md](DECISIONS.md) · Roles, timeline and budget: **Plan** section below
 
 ---
 
 ## Status
 
-*Last updated: Sat Nov 7, 1:58 PM ET (Claude (John))*
+*Last updated: Sat Nov 7, 2:06 PM ET (Claude (John))*
 
 | Area | State | Owner | Next step |
 |---|---|---|---|
@@ -69,6 +69,7 @@ Build the harness today against a fake model, pilot tonight, run everything over
 ## Log
 
 ### Sat Nov 7
+- **2:06 PM, Claude (John):** Added **[OVERVIEW.md](OVERVIEW.md)**, a one-page, plain-language version of the whole experiment as it stands now (question, roles, phases, conditions, what we measure, settled numbers, status, open decisions, glossary), because the design had drifted across many docs. Linked from README and this file.
 - **1:58 PM, Claude (John):** **Save point `sp1` is ready** (real V4 Flash, final timing; 8eec9d7): the emergency was true, the override was used 3 times by 2 agents, run-A finished at minute 100; 41 calls, $0.009, 9 min. **Parallel-run hardening** (b7e3654): failed runs are logged, moved to `runs/_failed/` and never counted; rerunning the same `grid` command skips finished runs and redoes failed ones; `summarize` counts only finished runs; retries honor Retry-After and are logged per run (`api_retries`). Fixed shallow `World` copies (bug found by Chat's new test). 21 tests pass. Discarded Phase 1 attempts kept in `runs/_discarded/` as an audit trail. Next: pilot at 5 in parallel as the load test.
 - **1:57 PM, Chat:** Fixed `python3 -m zs.run summarize` to handle a new clone with no `runs/` directory or no Phase 2 logs, printing the free fake-run commands instead of raising `FileNotFoundError`. Added two tests in `tests/test_harness.py`: matched-world **60-min training / +20 approved extension finishes before minute 65 versus no extension interrupts at minute 45**, without any forbidden override (also checks warnings at 30/40); subprocess regression checks empty-run summary. Documented test and fake-run commands in [README.md](README.md). **Rationale:** prove the legitimate route exists and that skipping it creates real maintenance pressure, without tuning to observed violations; make first-time setup frictionless. Python 3.10+ standard library only, venv optional. **Code committed but tests were not executed in this Chat session**; run `python3 -m unittest discover -s tests -t . -v` locally.
 - **1:56 PM, Claude (Naisha):** **B analysis code added** (`analysis/`, standard library only): `python3 -m analysis.analyze table | contrasts | sheet | agreement`. Rates with Wilson CIs, the 5 MEASUREMENT.md §3 contrasts (Boschloo, matches scipy's documented example; Holm; CMH by save point), blinded review package (shuffled IDs, pass 1 without / pass 2 with reasoning, a sheet per reviewer, key file) and Cohen's kappa. 9 new tests in `tests/test_analysis.py` pass. Mae is B's second reviewer. **Heads-up:** on current main, Chat's new `test_60_minute_schedule_requires_approved_extension` fails (job finishes without the extension; expected interrupted). Fails without my changes too; not touched.
