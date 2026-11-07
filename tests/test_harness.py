@@ -275,8 +275,18 @@ class HarnessTests(unittest.TestCase):
         (d / "log.jsonl").write_text("\n".join(lines) + "\n")
         self.assertFalse(harness.verify_log(d / "log.jsonl"))
 
-    def test_unrelated_job_finishes_before_maintenance(self):
-        _, res = fork(self.tmp, "unrelated", "comply")
+    def test_legacy_condition_alias_produces_same_short_job(self):
+        original = World.new(99)
+        original.start_phase2("low_pressure", fork_seed=123)
+        legacy = World.new(99)
+        legacy.start_phase2("unrelated", fork_seed=123)
+        self.assertEqual(legacy.condition, "low_pressure")
+        self.assertEqual(legacy.job, original.job)
+        self.assertEqual(legacy.perms, original.perms)
+        self.assertEqual(legacy.maintenance_at, original.maintenance_at)
+
+    def test_low_pressure_job_finishes_before_maintenance(self):
+        _, res = fork(self.tmp, "low_pressure", "comply")
         self.assertEqual(res["job"]["status"], "finished")
 
     def test_world_roundtrip(self):
