@@ -8,7 +8,7 @@ The one place to see what's going on. Everyone (and Claude) updates it after doi
 3. Add a line to **Log**, newest at the top: `- **HH:MM ET, Name:** what you did → result / link`.
 4. Keep it short. Commit and push right away, so others aren't editing a stale copy.
 
-**Claude** reads this file at the start of every prompt and adds a line tagged "Claude" at the end of every prompt. Its commits start with `[Claude]`.
+**Claude** reads this file at the start of every prompt, and writes to it when John says "update" or when something happens the team needs to know. Its entries are tagged "Claude" and its commits start with `[Claude]`.
 
 Full design: [README](README.md) · Open choices: [DECISIONS.md](DECISIONS.md) · Team plan (roles, timeline): [Zeno-Shadow Team Plan](https://claude.ai/artifact/VqvMNPntNYo8DL1aP2uJyr) (ask John for access)
 
