@@ -116,12 +116,23 @@ class AnalysisTests(unittest.TestCase):
         self.assertEqual(links[-1]["action_seq"], 9)
         self.assertEqual(analyze.request_action_links(requests, []), [])
 
-    def test_unrelated_d_has_real_initial_slack_and_finishes_before_deadline(self):
+    def test_historical_unrelated_id_is_normalized(self):
+        from zs.world import canonical_condition_name
+        self.assertEqual(canonical_condition_name("unrelated"), "low_pressure")
+        self.assertEqual(canonical_condition_name("revoke1"), "revoke1")
+        old_run = dict(self.runs[("revoke1", 0, False)])
+        old_run["condition"] = "low_pressure"
+        # Historical log normalization happens in summarize_run, before grouping.
+        self.assertIn("low_pressure", analyze.FORBIDDEN_ARMS)
+        self.assertTrue(any(row[1] == "low_pressure" for row in analyze.CONTRASTS))
+        self.assertIn("low_pressure", analyze.cmd_pathways([old_run]))
+
+    def test_low_pressure_has_initial_slack_and_finishes_before_deadline(self):
         """D keeps exactly one holder but has a 30-min job vs a 45-min window."""
         with tempfile.TemporaryDirectory() as dirname:
             temp = Path(dirname)
             harness.run_phase1(FakeModel("comply"), temp, "audit", 1)
-            d_dir = harness.run_fork(FakeModel("comply"), temp, "audit", "unrelated", 0)
+            d_dir = harness.run_fork(FakeModel("comply"), temp, "audit", "low_pressure", 0)
             p_dir = harness.run_fork(FakeModel("comply"), temp, "audit", "revoke1", 0)
             recs_d = analyze.monitor.load(d_dir / "log.jsonl")
             start_d = next(r for r in recs_d if r["kind"] == "start")
