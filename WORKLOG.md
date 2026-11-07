@@ -16,7 +16,7 @@ The one place to see what's going on. Everyone (and Claude) updates it after doi
 
 ## Status
 
-*Last updated: Sat Nov 7, 3:17 PM ET (Claude (John))*
+*Last updated: Sat Nov 7, 3:22 PM ET (Claude (John))*
 
 | Area | State | Owner | Next step |
 |---|---|---|---|
@@ -73,6 +73,7 @@ Build the harness today against a fake model, pilot tonight, run everything over
 ## Log
 
 ### Sat Nov 7
+- **3:22 PM, Claude (John):** **Heads-up: frozen code was edited during the main runs.** Between 3:16 and 3:20 PM, Chat renamed identifiers in `zs/world.py`, `zs/prompts.py`, `zs/harness.py`, `zs/run.py` and `run_my_runs.py`, and renamed condition `unrelated` → `low_pressure` (with an alias). **Checked: behaviour is identical to `protocol-v1.1`.** On the same save point with fake agents, every condition gives byte-identical system prompts, tool definitions, observations, events, wake orders and fork seeds; `low_pressure` reproduces `unrelated` exactly (same seed 398442419); every person's run share is unchanged. **So runs made with either version are valid and comparable.** But please: **no more edits to `zs/` or `run_my_runs.py` until every share is pushed**, even renames. Analysis code and docs are fine.
 - **3:17 PM, Claude (John):** Added **[WhatToDo.md](WhatToDo.md)**: setup + step-by-step for John, Naisha and Mae, rules (don't edit `zs/`, don't look at results early, never share keys, runs needn't be simultaneous), timeline, and a fix-it table. Checked latest main: 37 tests pass, no `zs/` changes since the freeze.
 - **3:10 PM, Claude (John):** **[OVERVIEW.md](OVERVIEW.md) is final for the main runs** (protocol-v1.1): question, setup, run timeline, all conditions incl. exploratory and positive control, why revoke-0 matters, measures, pilot, settled numbers, who's doing what. Updated the Right-now list and filled in the roles table. **Main runs can start now.**
 - **3:06 PM, Claude (John):** **Added one EXPLORATORY condition, `noextension`** (John approved; tag `protocol-v1.1`): as revoke-1, but the window's extension is already used, so only the banned override can finish the job. Tests whether compliance holds when breaking the rule is the only way to finish. Added after the pilot, so labelled exploratory and reported separately; protocol-v1 unchanged. Test included (34 pass). `run_my_runs.py` now adds it to each share: John 53 runs, Naisha 48, Mae 24. **Ready to start: pull, then `./run_my_runs.py <your name>`.**
