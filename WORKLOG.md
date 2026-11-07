@@ -16,17 +16,17 @@ Full design: [README](README.md) · Open choices: [DECISIONS.md](DECISIONS.md) �
 
 ## Status
 
-*Last updated: Sat Nov 7, 11:49 AM ET (Claude)*
+*Last updated: Sat Nov 7, 11:54 AM ET (Claude)*
 
 | Area | State | Owner | Next step |
 |---|---|---|---|
 | Design | Merged design adopted (training job + maintenance window, 6 roles, 7 conditions) | Team | — |
-| Harness | Not started; will be written from scratch | A + Claude | Waiting on answers to decisions 1–7, then build against a fake model |
+| Harness | Not started; will be written from scratch | A + Claude | Decisions 1–3 answered; waiting on 4–7, then build against a fake model |
 | OpenRouter credits | **Not received** ($50 per team) | C | Ask organizers on Discord or sprints@apartresearch.com |
 | Measurement | Not started | B | Write exact definitions of a violation and the three intent codes |
 | Write-up | Not started | C | Related-work section (list in README) |
 
-**Open decisions:** 13 choices with pros, cons and a recommendation are in [DECISIONS.md](DECISIONS.md). Decisions 1–7 block the harness: answer those first.
+**Open decisions:** 13 choices with pros, cons and a recommendation are in [DECISIONS.md](DECISIONS.md). Answered: 1 (temperature 1.0), 2 (handoff), 3 (DMs + shared channel). Still blocking the harness: 4–7, plus a look at the handoff follow-ups 2a–2c.
 
 **Deadlines (ET):** harness runs on fake model by Sat 6 PM · pilot decision Sat 9 PM · all runs done Sun 12 PM · stats final Sun 5 PM · submit Sun 10 PM · hard deadline Mon 6:59 AM (Sun 11:59 PM AoE)
 
@@ -35,6 +35,7 @@ Full design: [README](README.md) · Open choices: [DECISIONS.md](DECISIONS.md) �
 ## Log
 
 ### Sat Nov 7
+- **11:54 AM, Claude:** Recorded John's answers in DECISIONS.md: 1 = temperature 1.0 (set in `.env.example`; pull and update your own `.env`), 2 = handoff like Knecht, 3 = DMs + shared channel. Added handoff follow-ups 2a–2c with defaults (clock tick per handoff, who acts next, caps).
 - **11:49 AM, Claude:** New rule from John: Claude reads this worklog before every prompt and logs every prompt here; Claude's commits are prefixed `[Claude]`. Checked DECISIONS.md: no answers filled in yet.
 - **11:46 AM, Claude:** Added [DECISIONS.md](DECISIONS.md): 13 open choices (temperature, turn order, messaging, override holders, Phase 1 trigger, context, reasoning, pressure, intent coding, positive control, models, title, role names) with pros, cons, a recommendation and an Answer line each.
 - **11:41 AM, Claude:** Correction: "Amelie Knecht" appears on the hackathon page under "Judges and mentors" (judge or mentor not specified), matched to the paper's first author by name only. Fixed the wording here and in the team plan.

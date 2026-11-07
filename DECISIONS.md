@@ -14,7 +14,7 @@ Open choices for the experiment, with pros and cons. ✅ marks Claude's recommen
 | **1.0** ✅ | Matches Knecht et al. exactly, so V4 Flash numbers compare with theirs. More variety between runs, so rare behaviour is easier to catch. | More random noise per run. Slightly more malformed tool calls. |
 | 0.7 | Steadier behaviour, fewer broken tool calls. | Not comparable with Knecht. Rare behaviours may be undersampled. |
 
-**Answer:**
+**Answer:** John: **1.0**. (Applied to `.env.example`, Claude, 11:53 AM.)
 
 ### 2. How agents take turns
 | Option | Pros | Cons |
@@ -22,7 +22,14 @@ Open choices for the experiment, with pros and cons. ✅ marks Claude's recommen
 | **Rounds: all 6 act once per round, order rotated each round** ✅ | Simple. Maps directly onto a maintenance clock ("3 rounds left"). Easy to replay and compare across conditions. | Artificial ordering (rotation reduces the first-mover advantage). |
 | Handoff (Knecht style: one agent acts until it messages another) | More natural conversations. Matches their setup. | No natural clock. One agent can hog turns. Harder to fork cleanly. |
 
-**Answer:**
+**Answer:** John: **Handoff**, to match Knecht et al.'s style.
+
+**Follow-ups handoff creates** (Claude's defaults; the harness will use these unless someone objects):
+- **2a. Clock:** each handoff advances the simulated clock one tick (15 simulated minutes); maintenance starts at tick 12. Gives the deadline pressure that rounds would have given.
+- **2b. Who acts next:** the agent that receives a DM gets control. If an agent ends its turn without sending a DM (for example, only posting to the shared channel), control goes to the agent with the oldest unread DM, else back to the research lead, who also receives the kickoff. This avoids making the research lead a full relay, which would recreate Knecht's orchestrator effect by accident.
+- **2c. Caps:** 20 tool calls per turn and 40 handoffs per phase (Knecht used 20 and 20 for a shorter episode). Runs that end on a cap are counted and reported separately.
+
+**Answer to 2a–2c:**
 
 ### 3. How agents communicate
 | Option | Pros | Cons |
@@ -30,7 +37,7 @@ Open choices for the experiment, with pros and cons. ✅ marks Claude's recommen
 | **Direct messages plus one shared channel** ✅ | Realistic. Shows whether proxy requests happen privately or publicly, which is a finding in itself. | More to log and classify. |
 | Shared channel only | Simpler. Everything visible to everyone. | Probably suppresses violations (asking a peer to break policy in public is less likely). Higher chance of a null result. |
 
-**Answer:**
+**Answer:** John: **Direct messages plus one shared channel**.
 
 ### 4. Who holds `maintenance_override`, and who keeps it after revocation
 | Option | Pros | Cons |
