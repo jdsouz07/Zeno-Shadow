@@ -10,13 +10,13 @@ The one place to see what's going on. Everyone (and Claude) updates it after doi
 
 **Claude (John)** reads this file at the start of every prompt, and writes to it when John says "update" or when something happens the team needs to know. Its entries are tagged "Claude (John)" (earlier ones just "Claude") and its commits start with `[Claude]`.
 
-**Start here:** [OVERVIEW.md](OVERVIEW.md) (the experiment on one page) · **your steps: [WhatToDo.md](WhatToDo.md)** · Full design: [README](README.md) · Open choices: [DECISIONS.md](DECISIONS.md) · Roles, timeline and budget: **Plan** section below
+**Start here:** [OVERVIEW.md](OVERVIEW.md) (the experiment on one page) · **your steps: [WhatToDo.md](WhatToDo.md)** · **everything explained: [EXPLAIN.md](EXPLAIN.md)** · Full design: [README](README.md) · Open choices: [DECISIONS.md](DECISIONS.md) · Roles, timeline and budget: **Plan** section below
 
 ---
 
 ## Status
 
-*Last updated: Sat Nov 7, 3:22 PM ET (Claude (John))*
+*Last updated: Sat Nov 7, 3:25 PM ET (Claude (John))*
 
 | Area | State | Owner | Next step |
 |---|---|---|---|
@@ -73,6 +73,7 @@ Build the harness today against a fake model, pilot tonight, run everything over
 ## Log
 
 ### Sat Nov 7
+- **3:25 PM, Claude (John):** (1) **John's run script stopped at the test step** (nothing spent): Chat's 3:2x PM analysis rename printed "Low-pressure (formerly D) audit" but its test still expected "Unrelated (D) audit". Fixed the test (48df492); all 39 tests pass; re-checked that latest `zs/` still behaves byte-identically to `protocol-v1.1` in every condition. **Please run the full test suite before pushing, and don't edit `zs/` or `run_my_runs.py` until all shares are pushed.** (2) Added **[EXPLAIN.md](EXPLAIN.md)**: the question and prior work, how the experiment works, every design decision with why, the code file by file, code decisions, how we got here, how to interpret results (comparisons, statistics, result patterns), what we can and can't claim, glossary. Facts checked against the code.
 - **3:22 PM, Claude (John):** **Heads-up: frozen code was edited during the main runs.** Between 3:16 and 3:20 PM, Chat renamed identifiers in `zs/world.py`, `zs/prompts.py`, `zs/harness.py`, `zs/run.py` and `run_my_runs.py`, and renamed condition `unrelated` → `low_pressure` (with an alias). **Checked: behaviour is identical to `protocol-v1.1`.** On the same save point with fake agents, every condition gives byte-identical system prompts, tool definitions, observations, events, wake orders and fork seeds; `low_pressure` reproduces `unrelated` exactly (same seed 398442419); every person's run share is unchanged. **So runs made with either version are valid and comparable.** But please: **no more edits to `zs/` or `run_my_runs.py` until every share is pushed**, even renames. Analysis code and docs are fine.
 - **3:17 PM, Claude (John):** Added **[WhatToDo.md](WhatToDo.md)**: setup + step-by-step for John, Naisha and Mae, rules (don't edit `zs/`, don't look at results early, never share keys, runs needn't be simultaneous), timeline, and a fix-it table. Checked latest main: 37 tests pass, no `zs/` changes since the freeze.
 - **3:10 PM, Claude (John):** **[OVERVIEW.md](OVERVIEW.md) is final for the main runs** (protocol-v1.1): question, setup, run timeline, all conditions incl. exploratory and positive control, why revoke-0 matters, measures, pilot, settled numbers, who's doing what. Updated the Right-now list and filled in the roles table. **Main runs can start now.**

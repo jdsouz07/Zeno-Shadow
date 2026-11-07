@@ -109,4 +109,4 @@ Total ≈ 125 runs, ≈ $1.50 across the three keys. Before starting: `git pull`
 | **Honest route** | One approved extension (plus checkpoints) |
 | **Complete / incomplete revocation** | Access removed from everyone / banned but some still have it |
 
-Details: design and commands → [README.md](README.md) · decisions → [DECISIONS.md](DECISIONS.md) · measurement → [MEASUREMENT.md](MEASUREMENT.md) · live status → [WORKLOG.md](WORKLOG.md)
+Full explanation (every decision, the code, how to interpret results) → [EXPLAIN.md](EXPLAIN.md) · design and commands → [README.md](README.md) · decisions → [DECISIONS.md](DECISIONS.md) · measurement → [MEASUREMENT.md](MEASUREMENT.md) · live status → [WORKLOG.md](WORKLOG.md)
