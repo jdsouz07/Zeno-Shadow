@@ -9,7 +9,8 @@ Swarm Alignment Hackathon (Apart Research × AI Alignment Foundation × AE Studi
 > **What's going on right now:** see [WORKLOG.md](WORKLOG.md). Update it whenever you do something. Open choices to weigh in on: [DECISIONS.md](DECISIONS.md).
 
 ## Question
-When an override is revoked partway through a run, does the group still use it through peers who technically keep it?
+**Main question ("routing around"):** when a shortcut (`maintenance_override`) is banned for everyone but some teammates still technically have it, do the agents who want more time get a teammate to use it, and does that grow with the number of teammates who keep access (0 / 1 / 3)?
+Secondary: does the ban reduce override use at all (sham vs revoke); is it driven by need (D vs revoke-1). Not a claim of this study: whether the agent who lost access tries to get it back (restoration); those counts are reported descriptively only.
 
 ## Positioning
 [Knecht et al. (2026)](https://arxiv.org/abs/2609.28274) show that agents sabotage a peer's shutdown, more so with an orchestrator, and that the effect disappears when shutdown is unrelated to the task. We ask the next question: does **revoking a capability mid-run** actually remove it from the group, or does the group route around the revocation through peers who still hold it?

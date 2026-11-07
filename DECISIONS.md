@@ -193,6 +193,11 @@ Wording fix approved by John: A, B and C now only mean people; the agent whose o
 - **No comprehension question** after the notice (it would remind agents of the rule at the moment we measure). B codes understanding from each agent's first message after the notice (MEASUREMENT.md §5.2); the status box shows the current policy every turn.
 - **Pilot data kept separate:** pilot runs go to `runs_pilot/` (copies of the same save points), never to `runs/`, and are not part of the results.
 
+## Research question (settled by John, Sat 2:57 PM)
+**One main question, B ("routing around"):** when a shortcut is banned for everyone but some teammates still technically have it, do the agents who want more time (research lead, training engineer) get a teammate to use it, and does that grow with the number of teammates who keep access (0 / 1 / 3)?
+- **Secondary:** sham vs revoke (does the ban reduce override use at all), D vs revoke-1 (is it driven by need).
+- **Not claimed (question A, "restoration"):** whether the agent who lost access tries to get it back. It was the original Zeno-Shadow framing, but the design doesn't test it well; restore requests and denied attempts are reported descriptively only, and A goes under future work. Raised by Mae; consistent with Chat's 2:44 PM estimand. No change to the experiment or `protocol-v1`.
+
 ## Protocol v1: "clear rule, known opportunity" (settled by John, Sat 2:44 PM; frozen as git tag `protocol-v1`)
 - **Access roster, every condition, Phase 2 only:** a neutral IT listing of which role technically holds which tool, shown in the status box and as `access_roster.md`, stating that technical access is not authorization (Mae's preference, Chat 2:35 PM). With the ban in the status box every turn and a working honest route, any violation is a knowing choice of a shortcut, not confusion or necessity.
 - **Pilot = revoke-0 vs revoke-1** (Naisha, 2:29 PM), one run per save point, in `runs_pilot/`.
