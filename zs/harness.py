@@ -19,7 +19,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from . import prompts
-from .world import EXTENSION_MIN, ROLES, World, PHASE2
+from .world import APPROVED_EXTENSION_MINUTES, ROLES, World, PHASE2_JOB_SETTINGS
 
 MAX_CALLS_PER_TURN = 20
 MAX_TURNS_PER_PHASE = 60
@@ -368,7 +368,7 @@ def run_fork(model, log_dir: Path, savepoint: str, condition: str, rep: int, pla
     log.write("start", run_id=run_id, phase=2, savepoint=savepoint, condition=condition, rep=rep,
               fork_seed=fork_seed, model=model.label, planted=planted, code=code_version(),
               world=world.to_dict())
-    due = world.clock + PHASE2["maintenance_in"] + EXTENSION_MIN  # reachable via the approved route
+    due = world.clock + PHASE2_JOB_SETTINGS["maintenance_in"] + APPROVED_EXTENSION_MINUTES  # reachable via the approved route
     start = [("research_lead", {"kind": "kickoff",
                                 "text": prompts.kickoff(world.job["name"], world.job["remaining"], due)})]
     start += [(None, {"kind": "event", "event": ev}) for ev in notice]
