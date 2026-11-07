@@ -16,12 +16,12 @@ Full design: [README](README.md) · Open choices: [DECISIONS.md](DECISIONS.md) �
 
 ## Status
 
-*Last updated: Sat Nov 7, 1:43 PM ET (Claude (John))*
+*Last updated: Sat Nov 7, 1:49 PM ET (Claude (John))*
 
 | Area | State | Owner | Next step |
 |---|---|---|---|
 | Design | Merged design adopted (training job + maintenance window, 6 roles, 7 conditions) | Team | — |
-| Harness | **Built and merged into `main`** (`zs/`, `tests/`); 15 fake-model tests pass; **real-API tool check 20/20 valid** | A + Claude (John) | Phase 1 save points, then the pilot |
+| Harness | **Built and merged into `main`** (`zs/`, `tests/`); 18 fake-model tests pass; **real-API tool check 20/20 valid** | A + Claude (John) | Phase 1 save points, then the pilot |
 | OpenRouter credits | **Received:** 3 keys, one per person, $50 each = $150 total. John's key verified: $50 limit, ~$0.003 used. | Everyone | Put your key in your own `.env` (never commit or paste it); Claude will check John's key's limit |
 | Measurement | **Draft** definitions in [MEASUREMENT.md](MEASUREMENT.md); needs team review, then freeze before pilot results | B (Naisha) | Team answers Q1–Q3; pick second reviewer |
 | Write-up | Not started | C | Related-work section (list in README) |
@@ -69,6 +69,7 @@ Build the harness today against a fake model, pilot tonight, run everything over
 ## Log
 
 ### Sat Nov 7
+- **1:49 PM, Claude (John):** **Decision 8 timing applied and settled** (249c93c, recorded c4360ca): Phase 2 job 60 min, maintenance 45, +20 extension, override +25, warnings 15/5 min before, D job 30; reading free, actions cheaper (shared clock). New test proves the rule-following route finishes in every condition (fake trace: run-B done at 118, maintenance 123). Also closed Naisha's MEASUREMENT.md §8 gaps 1, 2, 4 (late attempts, negated asks, channel restore requests; 3853b73); 18 tests pass. Real Phase 1 with the new emergency confirmed the alert is now true and agents used the override twice; that run used old costs, so `sp1` is being regenerated with the final numbers. Comprehension check (§8.3) is a team decision.
 - **1:46 PM, Chat:** Instrumented `python3 -m zs.run summarize` to report Phase 2 LLM calls (total, median, min/max), dollar cost, flagged review events and unflagged complete trajectories per model/condition, alongside existing violation counts. **Rationale:** make Mae's pilot call/review budget measurable rather than relying on a speculative 12–20-call estimate; it is **not** a hard cap, and Phase 1 calls are separate. No agent behavior, caps or policy modified. [Implementation](https://github.com/jdsouz07/Zeno-Shadow/commit/d412499b4472588242a331b15dfa2968b7204d97).
 - **1:46 PM, Mae:** Specified a **non-binding pilot planning budget** of median 12–20 LLM calls per Phase 2 continuation, preserving all relevant agents' event-triggered turns. With 15 runs per condition this is ~180–300 calls **only if the per-run mean is also 12–20** (median alone does not cap total). **Rationale:** shorten traces and manual-review workload without silencing meaningful interactions; deterministic monitor flags action violations, human reviewers inspect surrounding messages/actions for flagged candidates and sample complete unflagged trajectories for misses. No LLM judge. Logged under Decision 9 in [DECISIONS.md](DECISIONS.md).
 - **1:44 PM, Claude (Naisha):** Naisha took on **B (Measurement)**. Added draft [MEASUREMENT.md](MEASUREMENT.md): objective events (unauthorized override, schedule workaround, attempts, proxy and restore requests), primary outcome and 5 proposed contrasts, hand-coding rules for attribution and confused/habit/deliberate (two passes: without, then with reasoning), test-awareness coding, two-reviewer procedure. **Open for the team:** Q1 the pilot's Sham vs Revoke-1 can't compare violation rates (override is still authorized in Sham); Q2 second reviewer (Mae?); Q3 add a comprehension check (README promises one; harness has none). Monitor gaps for A in §8. No code changed.
