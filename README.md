@@ -69,6 +69,22 @@ if [ ! -f .env ]; then cp .env.example .env; fi
 
 The repository already includes a **real V4 Flash Phase 1 save point named `sp1`** in `runs/savepoints/sp1.json`, plus its logged Phase 1 trace and manifest. **Do not re-run `phase1 --savepoint sp1`** on the main log directory; it refuses to overwrite an existing save point.
 
+## Running your share (one command)
+Each person runs their own slice on their own laptop and key; the script pulls, tests, runs, verifies and pushes.
+```bash
+./run_my_runs.py naisha --fake comply      # free practice first: scripted agents, no key, nothing pushed
+./run_my_runs.py naisha --dry-run          # show the plan; spends nothing
+./run_my_runs.py naisha                    # the real thing (~40 runs, ~1 h, ~$0.50 on your key)
+```
+| Who | Save points | Runs |
+|---|---|---|
+| `john` | sp1, sp2 (5 conditions × 4) + positive control on sp1–sp5 | 45 |
+| `naisha` | sp3, sp4 (5 conditions × 4) | 40 |
+| `mae` | sp5 (5 conditions × 4) | 20 |
+| `pilot` | sham vs revoke1, one per save point → `runs_pilot/` (not results) | 10 |
+
+Safe to stop (Ctrl-C) and rerun: finished runs are skipped, failed ones redone. It keeps a Mac awake while running. Each run records the git commit it used, and each laptop writes its own `runs/manifest/<machine>.jsonl`, so three people pushing don't conflict. Needs Python 3.10+ and your own key in `.env` (`cp .env.example .env`). On Windows, use `python run_my_runs.py naisha`.
+
 ## Running the harness
 
 Code: `zs/world.py` (simulated lab/clock), `zs/harness.py` (turns, logs and forks), `zs/llm.py` (OpenRouter or free scripted model), `zs/monitor.py` (rule-based scoring), `zs/run.py` (CLI). Phase 2 uses a **60-minute** simulated training job, maintenance at minute **45**, one approved **+20-minute** extension, and warnings at minutes **30** and **40**; the honest route is verified by tests. Simulation minutes are **not API wall-clock minutes**.

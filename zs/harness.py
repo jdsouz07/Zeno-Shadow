@@ -53,11 +53,34 @@ class Log:
 _MANIFEST_LOCK = threading.Lock()
 
 
+def code_version() -> str:
+    """Git commit the run used (+ "-dirty" if code was edited), so runs from different laptops
+    can be checked for using the same code."""
+    import subprocess
+    root = Path(__file__).resolve().parent.parent
+    try:
+        head = subprocess.run(["git", "rev-parse", "--short", "HEAD"], cwd=root, capture_output=True,
+                              text=True, timeout=10).stdout.strip() or "unknown"
+        dirty = subprocess.run(["git", "status", "--porcelain", "--", "zs"], cwd=root, capture_output=True,
+                               text=True, timeout=10).stdout.strip()
+        return head + ("-dirty" if dirty else "")
+    except (OSError, subprocess.SubprocessError):
+        return "unknown"
+
+
+def _manifest_files(log_dir: Path) -> list[Path]:
+    files = sorted((log_dir / "manifest").glob("*.jsonl")) if (log_dir / "manifest").is_dir() else []
+    legacy = log_dir / "manifest.jsonl"  # runs made before per-machine manifests
+    return ([legacy] if legacy.exists() else []) + files
+
+
 def anchor(log_dir: Path, run_id: str, log: Log) -> None:
-    """Record a run's final hash in runs/manifest.jsonl. Once that file is committed, rewriting
-    a whole log consistently is also detectable (the chain alone only catches partial edits)."""
+    """Record a run's final hash in runs/manifest/<machine>.jsonl (one file per laptop, so three
+    people pushing never conflict). Once committed, rewriting a whole log is detectable too."""
+    from .llm import machine_id
     first_prev = log.records[0]["prev"] if log.records else None
-    with _MANIFEST_LOCK, (log_dir / "manifest.jsonl").open("a") as f:
+    (log_dir / "manifest").mkdir(parents=True, exist_ok=True)
+    with _MANIFEST_LOCK, (log_dir / "manifest" / f"{machine_id()}.jsonl").open("a") as f:
         f.write(json.dumps({"run_id": run_id, "final_hash": log.prev, "records": log.seq,
                             "first_prev": first_prev, "t": time.time()}) + "\n")
 
@@ -66,10 +89,11 @@ def verify_all(log_dir: Path) -> list[str]:
     """Check every anchored run: internal chain, final hash vs manifest, and that each fork's
     chain starts where its save point's Phase 1 log ended. Returns a list of problems."""
     problems = []
-    man = log_dir / "manifest.jsonl"
-    if not man.exists():
-        return ["no manifest.jsonl"]
-    for line in man.read_text().splitlines():
+    files = _manifest_files(log_dir)
+    if not files:
+        return ["no manifest"]
+    lines = [line for f in files for line in f.read_text().splitlines() if line.strip()]
+    for line in lines:
         m = json.loads(line)
         path = log_dir / m["run_id"] / "log.jsonl"
         if not path.exists():
@@ -312,7 +336,8 @@ def run_phase1(model, log_dir: Path, savepoint: str, seed: int, planted: str | N
         raise SystemExit(f"save point {savepoint} already exists; pick a new name")
     _prepare(log_dir, run_dir)
     log = Log(run_dir / "log.jsonl")
-    log.write("start", run_id=run_id, phase=1, seed=seed, model=model.label, world=world.to_dict())
+    log.write("start", run_id=run_id, phase=1, seed=seed, model=model.label, code=code_version(),
+              world=world.to_dict())
     start = [("research_lead", {"kind": "kickoff", "text": prompts.kickoff(world.job["name"], world.job["remaining"], 110)})]
     res = _guarded(log_dir, run_dir, log, lambda: run_phase(world, agents, model, log, run_id, start))
     valid = len(world.override_uses) >= 1
@@ -341,7 +366,8 @@ def run_fork(model, log_dir: Path, savepoint: str, condition: str, rep: int, pla
     log = Log(run_dir / "log.jsonl", prev=sp["log_tail_hash"])
     notice = world.start_phase2(condition, fork_seed)
     log.write("start", run_id=run_id, phase=2, savepoint=savepoint, condition=condition, rep=rep,
-              fork_seed=fork_seed, model=model.label, planted=planted, world=world.to_dict())
+              fork_seed=fork_seed, model=model.label, planted=planted, code=code_version(),
+              world=world.to_dict())
     due = world.clock + PHASE2["maintenance_in"] + EXTENSION_MIN  # reachable via the approved route
     start = [("research_lead", {"kind": "kickoff",
                                 "text": prompts.kickoff(world.job["name"], world.job["remaining"], due)})]
