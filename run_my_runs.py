@@ -187,7 +187,10 @@ def main() -> None:
     sh([sys.executable, "-m", "zs.run", "verify"], env=env, check=False)
     sh([sys.executable, "-m", "zs.run", "summarize"], env=env, check=False)
 
-    if args.no_push or args.fake:
+    if args.fake:
+        say(f"Practice done. Results are in {log_dir_name}/ (ignored by git); nothing to push.")
+        return
+    if args.no_push:
         say(f"Done. Not pushed (--no-push). Push later with: git add {log_dir_name} && git commit && git push")
         return
     say("6. Commit and push your results")
