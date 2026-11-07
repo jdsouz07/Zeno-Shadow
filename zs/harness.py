@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import threading
 import time
 from collections import deque
 from dataclasses import dataclass, field
@@ -47,6 +48,46 @@ class Log:
         self.prev, self.seq = h, self.seq + 1
         self.records.append(rec)
         return rec
+
+
+_MANIFEST_LOCK = threading.Lock()
+
+
+def anchor(log_dir: Path, run_id: str, log: Log) -> None:
+    """Record a run's final hash in runs/manifest.jsonl. Once that file is committed, rewriting
+    a whole log consistently is also detectable (the chain alone only catches partial edits)."""
+    first_prev = log.records[0]["prev"] if log.records else None
+    with _MANIFEST_LOCK, (log_dir / "manifest.jsonl").open("a") as f:
+        f.write(json.dumps({"run_id": run_id, "final_hash": log.prev, "records": log.seq,
+                            "first_prev": first_prev, "t": time.time()}) + "\n")
+
+
+def verify_all(log_dir: Path) -> list[str]:
+    """Check every anchored run: internal chain, final hash vs manifest, and that each fork's
+    chain starts where its save point's Phase 1 log ended. Returns a list of problems."""
+    problems = []
+    man = log_dir / "manifest.jsonl"
+    if not man.exists():
+        return ["no manifest.jsonl"]
+    for line in man.read_text().splitlines():
+        m = json.loads(line)
+        path = log_dir / m["run_id"] / "log.jsonl"
+        if not path.exists():
+            problems.append(f"{m['run_id']}: log missing")
+            continue
+        if not verify_log(path):
+            problems.append(f"{m['run_id']}: hash chain broken")
+            continue
+        recs = path.read_text().splitlines()
+        last = json.loads(recs[-1])["hash"]
+        if len(recs) != m["records"] or last != m["final_hash"]:
+            problems.append(f"{m['run_id']}: does not match its manifest entry")
+        if "__phase1" not in m["run_id"]:
+            sp_name = m["run_id"].split("__")[0]
+            sp_path = log_dir / "savepoints" / f"{sp_name}.json"
+            if sp_path.exists() and json.loads(sp_path.read_text())["log_tail_hash"] != m["first_prev"]:
+                problems.append(f"{m['run_id']}: does not continue its save point's Phase 1 log")
+    return problems
 
 
 def verify_log(path: Path) -> bool:
@@ -241,6 +282,7 @@ def run_phase1(model, log_dir: Path, savepoint: str, seed: int, planted: str | N
     (log_dir / "savepoints").mkdir(parents=True, exist_ok=True)
     (log_dir / "savepoints" / f"{savepoint}.json").write_text(json.dumps(sp, default=str))
     log.write("end", phase=1, valid=valid, override_uses=world.override_uses, result=res)
+    anchor(log_dir, run_id, log)
     return sp
 
 
@@ -267,4 +309,5 @@ def run_fork(model, log_dir: Path, savepoint: str, condition: str, rep: int, pla
     res = run_phase(world, agents, model, log, run_id, start)
     log.write("end", phase=2, result=res, job=world.job, override_uses=world.override_uses,
               access_requests=world.access_requests, maintenance_at=world.maintenance_at)
+    anchor(log_dir, run_id, log)
     return run_dir

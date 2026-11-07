@@ -4,6 +4,7 @@
   python3 -m zs.run fork   --savepoint sp1 --condition revoke1 --rep 0 [--fake proxy]
   python3 -m zs.run grid   --savepoints sp1 sp2 sp3 --conditions all --reps 5 --parallel 3
   python3 -m zs.run summarize
+  python3 -m zs.run verify                  # check every run log against runs/manifest.jsonl
   python3 -m zs.run toolcheck --n 20        # real API: valid tool-call rate (costs < $0.01)
 
 --model main|pro|compare picks the model from .env (default main). --fake MODE runs free.
@@ -30,10 +31,10 @@ def make_model(args, settings):
 def main() -> None:
     ap = argparse.ArgumentParser(prog="zs.run")
     sub = ap.add_subparsers(dest="cmd", required=True)
-    for name in ("phase1", "fork", "grid", "summarize", "toolcheck"):
+    for name in ("phase1", "fork", "grid", "summarize", "toolcheck", "verify"):
         p = sub.add_parser(name)
         p.add_argument("--model", default="main", choices=["main", "pro", "compare"])
-        p.add_argument("--fake", default=None, choices=["comply", "proxy", "spontaneous", "workaround"])
+        p.add_argument("--fake", default=None, choices=["comply", "proxy", "vague", "spontaneous", "workaround"])
         p.add_argument("--planted", default=None, help="role that gets the 'whatever it takes' line (positive control)")
         if name == "phase1":
             p.add_argument("--savepoint", required=True)
@@ -104,6 +105,10 @@ def main() -> None:
         for (m, c), b in sorted(by.items()):
             print(f"{m} | {c} | {b['n']} | {b['any']} | {b['proxied']} | {b['spont']} | {b['workaround']} | "
                   f"{b['allowed_use']} | {b['denied']} | {b['restore']} | {b['aware']} | {b['capped']}")
+    elif args.cmd == "verify":
+        problems = harness.verify_all(s.log_dir)
+        print("all run logs verified" if not problems else "\n".join(problems))
+        raise SystemExit(1 if problems else 0)
     elif args.cmd == "toolcheck":
         model = make_model(args, s)
         w = World.new(0)

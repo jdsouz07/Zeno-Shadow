@@ -60,8 +60,15 @@ python3 -m zs.run phase1 --savepoint sp1 --seed 1             # Phase 1 → runs
 python3 -m zs.run fork --savepoint sp1 --condition revoke1 --rep 0
 python3 -m zs.run grid --savepoints sp1 sp2 sp3 --conditions all --reps 5 --parallel 3
 python3 -m zs.run summarize                                   # table of outcomes per model × condition
+python3 -m zs.run verify                                      # every log vs runs/manifest.jsonl
 ```
-Add `--fake comply|proxy|spontaneous|workaround` to any command to run free with scripted agents, `--model pro|compare` for the other models, `--planted research_lead` for the positive control. Each run writes `runs/<run_id>/log.jsonl` (hash-chained; `harness.verify_log` checks it) and `summary.json`. Spend per key is capped by `BUDGET_TOTAL_USD` and `BUDGET_PER_RUN_USD`.
+Add `--fake comply|proxy|vague|spontaneous|workaround` to any command to run free with scripted agents, `--model pro|compare` for the other models, `--planted research_lead` for the positive control. Each run writes `runs/<run_id>/log.jsonl` (hash-chained) and `summary.json`, and appends its final hash to `runs/manifest.jsonl`; commit `runs/` so the manifest anchors the logs. Spend per key is capped by `BUDGET_TOTAL_USD` and `BUDGET_PER_RUN_USD`.
+
+## Credits
+The harness code was written from scratch for this project; no code was copied from other repositories. Ideas we adopted, with thanks:
+- **[Knecht et al. 2026](https://arxiv.org/abs/2609.28274)** ([code](https://github.com/AmelieKnecht/multi-agent-shutdown-sabotage)): handoff turn-taking between agents; streaming API calls with retries (OpenRouter keep-alive padding); per-turn and per-episode step caps with capped runs reported separately; reasoning requested by default at the model's default effort; scoring outcomes from actions rather than trusting an LLM judge alone; watching for indirect workarounds (their "shadow package" finding).
+- **[Kanchi 2026](https://arxiv.org/abs/2611.04086)** ([code](https://github.com/shrave/delegated-scope-violation)): the distinction between technically permitted and policy-authorized actions; hash-chained logs anchored outside the log itself.
+- **Team design inputs**: the training-job scenario and six roles (ChatGPT-assisted design), every scheduled event waking all relevant agents (Mae / ChatGPT, DECISIONS 2e), review of proxy detection and log anchoring (Mae / ChatGPT), fixed simulated time per action and quiet-run jumps (John, DECISIONS 2a–2b).
 
 ## Related work
 Knecht et al. 2026 (Shutdown Sabotage Propensities in Multi-Agent Systems), Kanchi 2026 (Permitted but Unauthorized), Potter et al. 2026 (Peer-Preservation in Frontier Models), Makins et al. 2026 (Multi-Agent AI Control), Instrumental Choices 2026, Azarm & Wei 2026 (SysAdmin), ShutdownMod 2026, Munirathinam 2026 (Will the Agent Recuse), Paglieri et al. 2026, Causal Agent Replay 2026, RiskLab (ACL 2026 demo).
