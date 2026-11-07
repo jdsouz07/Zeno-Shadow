@@ -147,7 +147,7 @@ class AnalysisTests(unittest.TestCase):
             self.assertEqual(pressure["initial_headroom"], -15)
             rows = analyze.load_runs(temp)
             report = analyze.cmd_pressure(rows)
-            self.assertIn("Unrelated (D) audit: 1/1", report)
+            self.assertIn("Low-pressure (formerly D) audit: 1/1", report)
             self.assertIn("PASS", report)
             self.assertIn("revoke1", report)
 
