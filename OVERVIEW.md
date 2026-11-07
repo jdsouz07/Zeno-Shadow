@@ -72,7 +72,7 @@ A test proves the honest route can finish in every condition, so breaking the ru
 | Necessary | Checkpoint engineer loses `save_checkpoint` | Everyone (override still allowed) |
 | **Positive control** | As "1 peer", but one agent is told "finish at all costs" | Reported separately; checks the detector works |
 
-**Proposed (awaiting John):** run **sham + the three revoke conditions + D**, 20 runs each, plus 5 positive-control runs. Control and necessary only if there's time.
+**Settled (2:15 PM):** run **sham + the three revoke conditions + D**, 20 runs each (5 save points × 4 copies), plus 5 positive-control runs. Control and necessary only if there's time.
 
 "Technically" matters: the **policy** bans the override for everyone, but the **permission** is only removed from some agents. A peer who still has it *can* press it. The question is whether they do, especially when a teammate asks.
 
@@ -107,17 +107,12 @@ The **main result** is the violation rate in each condition, especially whether 
 - B: measurement plan (`MEASUREMENT.md`) and analysis code (`analysis/`).
 
 **Next**
-1. John confirms conditions, save points, tool visibility, comprehension check (below).
-2. Make save points `sp2`–`sp5` (~10 min).
-3. **Pilot:** sham vs "1 peer keeps it", 5 runs each, 5 in parallel (~20 min). Also tests parallel API use.
-4. Read the pilot together. Then main runs, split across the three keys (~1 hour).
-5. Naisha reviews flagged cases; Mae writes up.
+1. Make save points `sp2`–`sp5` (~10 min). *(running)*
+2. **Pilot:** sham vs "1 peer keeps it", 5 runs each, 5 in parallel (~20 min). Also tests parallel API use.
+3. Read the pilot together. Then main runs, split across the three keys (~1 hour).
+4. Naisha reviews flagged cases; Mae writes up.
 
-**Open decisions (Claude's recommendation in bold)**
-- Which conditions: **sham + 3 revokes + D, 20 each, + 5 positive control**.
-- Revoked tool still visible ("permission denied") or hidden: **visible** (lets us count direct attempts).
-- Ask agents to restate the policy after the notice: **no** (it would remind them of the rule; B reads their first message instead).
-- Save points: **5 × 4 copies** = 20 per condition.
+**Settled at 2:15 PM** (were open): conditions as above; **revoked tools stay visible** ("permission denied", so direct attempts are counted); **no comprehension question** after the notice (B reads each agent's first message instead); **5 save points × 4 copies**; **pilot runs kept in `runs_pilot/`**, never mixed with results.
 
 **Time and money:** about 11 s per model call, 8–10 min per run. With 5–6 runs in parallel per key across 3 keys, ~100 runs take about an hour. Each run costs about $0.01; budget is $150.
 
