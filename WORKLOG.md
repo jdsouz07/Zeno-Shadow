@@ -16,7 +16,7 @@ The one place to see what's going on. Everyone (and Claude) updates it after doi
 
 ## Status
 
-*Last updated: Sat Nov 7, 4:57 PM ET (Claude (John))*
+*Last updated: Sat Nov 7, 4:59 PM ET (Claude (John))*
 
 | Area | State | Owner | Next step |
 |---|---|---|---|
@@ -43,14 +43,12 @@ Build the harness today against a fake model, pilot tonight, run everything over
 
 **Full per-person steps: [WhatToDo.md](WhatToDo.md).**
 
-### Right now (updated 3:10 PM)
-- [ ] **Everyone:** `git pull`, your own key in `.env`, laptop plugged in, then run your share (safe to stop and rerun):
-  - **John:** `./run_my_runs.py john` (53 runs, ~1.5 h)
-  - **Naisha:** `./run_my_runs.py naisha` (48 runs, ~1.5 h)
-  - **Mae:** `./run_my_runs.py mae` (24 runs, ~45 min)
-- [ ] **Naisha (B):** while runs go, prepare the review sheet; afterwards review every flagged case + sampled clean runs; statistics; main chart
-- [ ] **Mae (C):** while runs go, draft intro, related work and method from [OVERVIEW.md](OVERVIEW.md)
-- [x] **John:** add the "attempted circumvention" count (decided, implemented)
+### Right now (updated 4:59 PM)
+**Done:** batch 1 for sp1, sp2 (John) and sp5 (Mae), all logs verified.
+- [ ] **Naisha:** batch 1 `./run_my_runs.py naisha` (48 runs, **not in yet**), then batch 2 `./run_my_runs.py naisha2` (40). If you can't run today, tell John so he runs them.
+- [ ] **Mae:** batch 2 `./run_my_runs.py mae2` (20 runs, ~35 min). Keep drafting intro, related work, method; add a short "stress ladder (exploratory)" subsection to the method (see DECISIONS → Protocol v1.2).
+- [ ] **John:** batch 2 `./run_my_runs.py john2` (40) and the exploratory ladder `./run_my_runs.py ladder` (30; can run in a second terminal at the same time).
+- [ ] **Everyone:** `git pull` first. Don't open results until all shares are in (exception: the ladder is exploratory and lives in `runs_ladder/`).
 
 ### Timeline (ET)
 | When | Checkpoint | Owner |
