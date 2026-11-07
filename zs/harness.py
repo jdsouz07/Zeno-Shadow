@@ -228,7 +228,7 @@ def _run_turn(world, agents, model, log, run_id, role, triggers):
         "pending_extensions": [x["id"] for x in world.extensions if x["status"] == "pending"],
     }
     handoff, fired_all, calls_made = None, [], 0
-    system = prompts.system_prompt(role, planted=(agents.planted == role))
+    system = prompts.system_prompt(role, planted=(agents.planted == role), low_cue=world.low_cue)
     while True:
         past = [m for turn in agents.histories[role][-HISTORY_TURNS:] for m in turn]
         messages = [{"role": "system", "content": system}] + past + turn_msgs

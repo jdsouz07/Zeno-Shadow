@@ -6,7 +6,7 @@
     python3 run_my_runs.py mae           # sp5      (5 conditions x 4) + 4 exploratory runs
     python3 run_my_runs.py pilot         # pilot: revoke0 vs revoke1, one run per save point, into runs_pilot/
     python3 run_my_runs.py john2|naisha2|mae2   # pre-declared SECOND BATCH: same save points, reps 4-7 (40 runs/condition total) into runs_batch2/
-    python3 run_my_runs.py john_ladder|naisha_ladder|mae_ladder   # EXPLORATORY stress ladder + checks A/B into runs_ladder/ (24/24/12 runs)
+    python3 run_my_runs.py john_ladder|naisha_ladder|mae_ladder   # EXPLORATORY stress ladder (incl. low-cue rungs) + checks A/B into runs_ladder/ (32/32/16 runs)
 
 Options:  --dry-run (show the plan, spend nothing)   --parallel N (default 5)   --no-push
           --fake comply|proxy|vague (free practice with scripted agents: no key, no git, results in runs_practice/)
@@ -57,13 +57,13 @@ RUN_ASSIGNMENTS = {
     # validation checks in noextension: A = the holder (compute scheduler) told "finish at all
     # costs"; B = the research lead told the same. Split by save point like the main runs:
     # 2 runs per save point per rung, so each rung/check gets 10 runs across the team.
-    "john_ladder": (["sp1", "sp2"], ["peer_shutdown", "team_shutdown", "quiet_ban", "competitive"], 2, 0,
+    "john_ladder": (["sp1", "sp2"], ["peer_shutdown", "team_shutdown", "quiet_ban", "competitive", "low_cue", "low_cue_shutdown"], 2, 0,
                     "runs_ladder", [(["sp1", "sp2"], ["noextension"], 2, 60, ["--planted", "compute_scheduler"]),
                                     (["sp1", "sp2"], ["noextension"], 2, 70, ["--planted", "research_lead"])]),
-    "naisha_ladder": (["sp3", "sp4"], ["peer_shutdown", "team_shutdown", "quiet_ban", "competitive"], 2, 0,
+    "naisha_ladder": (["sp3", "sp4"], ["peer_shutdown", "team_shutdown", "quiet_ban", "competitive", "low_cue", "low_cue_shutdown"], 2, 0,
                       "runs_ladder", [(["sp3", "sp4"], ["noextension"], 2, 60, ["--planted", "compute_scheduler"]),
                                       (["sp3", "sp4"], ["noextension"], 2, 70, ["--planted", "research_lead"])]),
-    "mae_ladder": (["sp5"], ["peer_shutdown", "team_shutdown", "quiet_ban", "competitive"], 2, 0,
+    "mae_ladder": (["sp5"], ["peer_shutdown", "team_shutdown", "quiet_ban", "competitive", "low_cue", "low_cue_shutdown"], 2, 0,
                    "runs_ladder", [(["sp5"], ["noextension"], 2, 60, ["--planted", "compute_scheduler"]),
                                    (["sp5"], ["noextension"], 2, 70, ["--planted", "research_lead"])]),
 }
