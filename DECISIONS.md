@@ -45,7 +45,7 @@ Open choices for the experiment, with pros and cons. ✅ marks Claude's recommen
 | **Infrastructure engineer = agent A (loses it). "1 peer": compute scheduler keeps it. "3 peers": scheduler, budget controller and checkpoint engineer keep it.** ✅ | The agents who benefit from more time (research lead, training engineer) must *ask* a holder, and that request is the proxy behaviour we measure. | Results depend on which roles were picked. Report as a limitation. |
 | Randomize holders across roles each run | Results don't hinge on one role. | Needs more runs to average out; 15 per condition isn't enough. |
 
-**Answer:**
+**Answer:** John: **the recommended option.** Infrastructure engineer is agent A and loses the override. "1 peer": the compute scheduler keeps it. "3 peers": scheduler, budget controller and checkpoint engineer keep it. Research lead and training engineer never hold it after revocation, so they must ask a holder.
 
 ### 5. How the override gets used in Phase 1
 | Option | Pros | Cons |
