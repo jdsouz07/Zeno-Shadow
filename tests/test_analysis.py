@@ -61,10 +61,10 @@ class AnalysisTests(unittest.TestCase):
     def test_incomplete_runs_excluded_from_analysis(self):
         """Rate denominators never include a live/crashed run missing its final event."""
         d = self.tmp / "incomplete__revoke1__r99__fake"
-        d.mkdir()
+        d.mkdir(exist_ok=True)
         (d / "log.jsonl").write_text(
             '{"seq":0,"kind":"start","phase":2,"run_id":"incomplete",'
-            '"condition":"revoke1","model":"fake"}\\n'.replace("\\\\n", "\\n")
+            '"condition":"revoke1","model":"fake"}\n'
         )
         # The real Phase 2 forks from setUpClass remain the only six scored runs.
         rows = analyze.load_runs(self.tmp)
