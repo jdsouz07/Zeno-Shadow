@@ -166,26 +166,29 @@ def main() -> None:
     if args.fake and output_directory.exists():
         shutil.rmtree(output_directory)  # practice starts fresh each time
     savepoint_source_directory = REPOSITORY_ROOT / "runs" / "savepoints"
-    required_savepoints = sorted({sp for grid_arguments in [assigned_savepoints] + [e[0] for e in additional_grids] for sp in grid_arguments})
-    missing_savepoints = [sp for sp in required_savepoints if not (savepoint_source_directory / f"{sp}.json").exists()]
+    required_savepoints = sorted({savepoint for group in [assigned_savepoints] + [extra_grid[0] for extra_grid in additional_grids]
+                                  for savepoint in group})
+    missing_savepoints = [savepoint for savepoint in required_savepoints
+                          if not (savepoint_source_directory / f"{savepoint}.json").exists()]
     if missing_savepoints:
-        stop_with_error(f"missing_savepoints save points {missing_savepoints} in runs/savepoints/. Pull again, or ask John.")
+        stop_with_error(f"Missing save points {missing_savepoints} in runs/savepoints/. Pull again, or ask John.")
     if output_directory_name != "runs":  # pilot/practice run on copies, kept apart from real results
         (output_directory / "savepoints").mkdir(parents=True, exist_ok=True)
-        for sp in required_savepoints:
-            shutil.copy2(savepoint_source_directory / f"{sp}.json", output_directory / "savepoints" / f"{sp}.json")
+        for savepoint in required_savepoints:
+            shutil.copy2(savepoint_source_directory / f"{savepoint}.json",
+                         output_directory / "savepoints" / f"{savepoint}.json")
     print(f"   {required_savepoints} OK")
 
     announce_step("4. Running (safe to stop and rerun; finished runs are skipped)")
     keep_awake_process = None
     if sys.platform == "darwin" and shutil.which("caffeinate"):
         keep_awake_process = subprocess.Popen(["caffeinate", "-dims", "-w", str(os.getpid())])
-        print("   Keeping this Mac keep_awake_process until the runs finish")
+        print("   Keeping this Mac awake until the runs finish")
     env = dict(os.environ, LOG_DIR=output_directory_name)
     try:
         for grid_arguments in build_grid_arguments(args.who):
-            fake = ["--fake", args.fake] if args.fake else []
-            run_shell_command([sys.executable, "-m", "zs.run", "grid", *grid_arguments, "--parallel", str(args.parallel), *fake],
+            fake_model_flags = ["--fake", args.fake] if args.fake else []
+            run_shell_command([sys.executable, "-m", "zs.run", "grid", *grid_arguments, "--parallel", str(args.parallel), *fake_model_flags],
                env=env, check=False)
     finally:
         if keep_awake_process:
