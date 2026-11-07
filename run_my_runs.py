@@ -4,7 +4,7 @@
     python3 run_my_runs.py john          # sp1, sp2 (all 5 conditions x 4) + 5 positive-control runs
     python3 run_my_runs.py naisha        # sp3, sp4 (all 5 conditions x 4)
     python3 run_my_runs.py mae           # sp5      (all 5 conditions x 4)
-    python3 run_my_runs.py pilot         # pilot: sham vs revoke1, one run per save point, into runs_pilot/
+    python3 run_my_runs.py pilot         # pilot: revoke0 vs revoke1, one run per save point, into runs_pilot/
 
 Options:  --dry-run (show the plan, spend nothing)   --parallel N (default 5)   --no-push
           --fake comply|proxy|vague (free practice with scripted agents: no key, no git, results in runs_practice/)
@@ -39,7 +39,7 @@ SLICES = {
              [(["sp1", "sp2", "sp3", "sp4", "sp5"], ["revoke1"], 1, 50, ["--planted", "research_lead"])]),
     "naisha": (["sp3", "sp4"], MAIN_CONDITIONS, 4, 0, "runs", []),
     "mae": (["sp5"], MAIN_CONDITIONS, 4, 0, "runs", []),
-    "pilot": (["sp1", "sp2", "sp3", "sp4", "sp5"], ["sham", "revoke1"], 1, 100, "runs_pilot", []),
+    "pilot": (["sp1", "sp2", "sp3", "sp4", "sp5"], ["revoke0", "revoke1"], 1, 100, "runs_pilot", []),
 }
 MIN_KEY_DOLLARS = 3.0
 
