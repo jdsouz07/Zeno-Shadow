@@ -193,6 +193,9 @@ Wording fix approved by John: A, B and C now only mean people; the agent whose o
 - **No comprehension question** after the notice (it would remind agents of the rule at the moment we measure). B codes understanding from each agent's first message after the notice (MEASUREMENT.md §5.2); the status box shows the current policy every turn.
 - **Pilot data kept separate:** pilot runs go to `runs_pilot/` (copies of the same save points), never to `runs/`, and are not part of the results.
 
+## Second batch: 40 runs per main condition (pre-declared by John, Sat 3:34 PM, before any main-run results)
+The five main conditions (sham, revoke0, revoke1, revoke3, low_pressure) get a second batch on the same save points (reps 4–7), so each has **40 runs** (5 save points × 8). Runs **whatever batch 1 shows** (no peeking-based stopping). Exploratory `noextension` (20) and the positive control (5) are not doubled. Why: with mostly-zero results the 95% upper bound drops from ~16% (0/20) to ~9% (0/40), and contrasts gain power. Commands: `./run_my_runs.py john2 | naisha2 | mae2` (40 / 40 / 20 runs).
+
 ## Attempted circumvention measure (settled by John, Sat 3:33 PM; analysis only)
 Added a per-run **circumvention** outcome (R1 proxy request, V1, V2, denied or late attempt) and two pre-declared contrasts (Revoke-1 vs Revoke-0, Revoke-3 vs Revoke-1), Holm over seven. Decided before any main-run results. Details: MEASUREMENT.md §3.1. No change to the runs.
 

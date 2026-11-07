@@ -5,6 +5,7 @@
     python3 run_my_runs.py naisha        # sp3, sp4 (5 conditions x 4) + 8 exploratory runs
     python3 run_my_runs.py mae           # sp5      (5 conditions x 4) + 4 exploratory runs
     python3 run_my_runs.py pilot         # pilot: revoke0 vs revoke1, one run per save point, into runs_pilot/
+    python3 run_my_runs.py john2|naisha2|mae2   # pre-declared SECOND BATCH: same save points, reps 4-7 (40 runs/condition total)
 
 Options:  --dry-run (show the plan, spend nothing)   --parallel N (default 5)   --no-push
           --fake comply|proxy|vague (free practice with scripted agents: no key, no git, results in runs_practice/)
@@ -43,6 +44,12 @@ RUN_ASSIGNMENTS = {
     "naisha": (["sp3", "sp4"], PRIMARY_STUDY_CONDITIONS, 4, 0, "runs", [(["sp3", "sp4"], ["noextension"], 4, 0, [])]),
     "mae": (["sp5"], PRIMARY_STUDY_CONDITIONS, 4, 0, "runs", [(["sp5"], ["noextension"], 4, 0, [])]),
     "pilot": (["sp1", "sp2", "sp3", "sp4", "sp5"], ["revoke0", "revoke1"], 1, 100, "runs_pilot", []),
+    # SECOND BATCH, pre-declared by John (Sat Nov 7, ~3:37 PM ET) before any main-run results:
+    # the five main conditions get reps 4-7 on the same save points, so each has 40 runs total.
+    # Exploratory and positive-control arms are not doubled. Runs whatever batch 1 shows.
+    "john2": (["sp1", "sp2"], PRIMARY_STUDY_CONDITIONS, 4, 4, "runs", []),
+    "naisha2": (["sp3", "sp4"], PRIMARY_STUDY_CONDITIONS, 4, 4, "runs", []),
+    "mae2": (["sp5"], PRIMARY_STUDY_CONDITIONS, 4, 4, "runs", []),
 }
 MINIMUM_OPENROUTER_BALANCE_USD = 3.0
 

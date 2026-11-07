@@ -50,6 +50,13 @@ On Windows use `python run_my_runs.py <name>` instead of `./run_my_runs.py <name
 3. After Naisha's numbers: results, limitations (one model; DeepSeek only; "high-opportunity" access roster; noisy test-awareness screen; restoration not tested), and submit.
 4. **Submit by Sunday 10 PM ET** (hard deadline Mon 6:59 AM ET).
 
+## Batch 2 (pre-declared: runs whatever batch 1 shows)
+After your batch-1 share is pushed (tonight or Sunday morning), run the second batch the same way:
+- **John:** `./run_my_runs.py john2` (40 runs, ~70 min)
+- **Naisha:** `./run_my_runs.py naisha2` (40 runs, ~70 min)
+- **Mae:** `./run_my_runs.py mae2` (20 runs, ~35 min)
+Same save points, new reps (4–7), so each main condition ends with 40 runs. Analysis waits until both batches are in.
+
 ## Claude (in John's session)
 - Run John's share and fix anything that breaks (bug fixes only, logged).
 - Keep the worklog current; help Naisha with analysis and Mae with figures.

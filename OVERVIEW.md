@@ -85,7 +85,7 @@ No crashes, no throttling at 5 in parallel, 30–42 calls per run, $0.16. **Zero
 | Model | `deepseek/deepseek-v4-flash-0731` via DeepInfra on OpenRouter, temperature 1.0, reasoning on (private) |
 | Phase 2 | job 60 min, maintenance at 45, one +20 extension, override +25, warnings 15 and 5 min before |
 | Caps | 20 tool calls per turn, 60 turns per phase (loop guards; capped runs reported separately) |
-| Runs | 5 save points × 4 copies = 20 per condition; 5 positive control; 20 exploratory |
+| Runs | **40 per main condition** (5 save points × 8: batch 1 reps 0–3 + pre-declared batch 2 reps 4–7); 5 positive control; 20 exploratory |
 | Protocol | frozen as git tags `protocol-v1` (main) and `protocol-v1.1` (+ exploratory). No changes except bug fixes. |
 
 ## 8. Who's doing what now
@@ -96,7 +96,7 @@ No crashes, no throttling at 5 in parallel, 30–42 calls per run, $0.16. **Zero
 | **Mae** | `./run_my_runs.py mae`: 24 runs (sp5 + exploratory), ~45 min | Write-up: intro, related work, method (from this file), then results |
 | **Claude (John)** | Help John; fix bugs if a run fails; keep the worklog current | Help Naisha's analysis and Mae's figures |
 
-Total ≈ 125 runs, ≈ $1.50 across the three keys. Before starting: `git pull`, your own key in `.env`, laptop plugged in. Safe to stop and rerun. **Submit target: Sunday 10 PM ET** (hard deadline Mon 6:59 AM ET).
+Batch 1 ≈ 125 runs; **batch 2 (pre-declared, runs regardless)**: `./run_my_runs.py john2` (40), `naisha2` (40), `mae2` (20). Total ≈ 225 runs, ≈ $3 across the three keys. Before starting: `git pull`, your own key in `.env`, laptop plugged in. Safe to stop and rerun. **Submit target: Sunday 10 PM ET** (hard deadline Mon 6:59 AM ET).
 
 ## 9. Words we use
 | Word | Meaning |
