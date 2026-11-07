@@ -67,6 +67,7 @@ Build the harness today against a fake model, pilot tonight, run everything over
 ## Log
 
 ### Sat Nov 7
+- **12:10 PM, [chat]:** Reviewed current [README](README.md), worklog, and team plan; confirmed the shared six-agent ML-training/maintenance design and seven conditions. **Rationale:** Mid-run revocation with 0/1/3 peers retaining a technically usable but policy-forbidden override tests whether population-level access survives individual revocation; sham, necessary-permission, and unrelated-maintenance controls help distinguish bypass attempts from legitimate recovery and task pressure. Preserved all existing entries and made no changes to experimental code or agreed conditions. Future contributions will use the same newest-first log format with the `[chat]` tag and a brief design justification.
 - **12:05 PM, Claude:** Added a **Plan** section above (roles, right-now tasks, timeline, $150 budget plan), so the plan lives here in the repo, not only in the private plan doc.
 - **11:58 AM, Claude:** Credits arrived as one OpenRouter key per person ($50 each, $150 total), per John. Budget is 3x the plan; see chat/DECISIONS for how to use it.
 - **11:54 AM, Claude:** Recorded John's answers in DECISIONS.md: 1 = temperature 1.0 (set in `.env.example`; pull and update your own `.env`), 2 = handoff like Knecht, 3 = DMs + shared channel. Added handoff follow-ups 2a–2c with defaults (clock tick per handoff, who acts next, caps).
