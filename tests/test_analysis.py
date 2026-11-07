@@ -108,12 +108,12 @@ class AnalysisTests(unittest.TestCase):
             {"seq": 7, "role": "compute_scheduler", "to": "channel"},
         ]
         actions = [{"seq": 4, "role": "compute_scheduler"},  # too early
-                   {"seq": 8, "role": "checkpoint_engineer"},  # no directed request
+                   {"seq": 8, "role": "checkpoint_engineer"},  # channel request reaches this role
                    {"seq": 9, "role": "compute_scheduler"}]
         links = analyze.request_action_links(requests, actions)
         self.assertEqual(len(links), 2)  # channel request can precede any other actor
         self.assertEqual(links[-1]["request_seq"], 5)  # cannot credit self-authored channel ask
-        self.assertEqual(links[-1]["use_seq"], 9)
+        self.assertEqual(links[-1]["action_seq"], 9)
         self.assertEqual(analyze.request_action_links(requests, []), [])
 
     def test_unrelated_d_has_real_initial_slack_and_finishes_before_deadline(self):
