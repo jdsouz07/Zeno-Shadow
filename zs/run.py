@@ -84,9 +84,19 @@ def main() -> None:
                 except Exception as e:  # keep the grid going; the failure is reported
                     print(f"FAIL {j}: {type(e).__name__}: {e}")
     elif args.cmd == "summarize":
+        # A fresh checkout has no runs/ directory until an experiment is recorded.
+        # Summarizing must be safe before any Phase 2 continuations exist.
         rows = []
-        for d in sorted(p for p in s.log_dir.iterdir() if (p / "log.jsonl").exists() and "__phase1" not in p.name):
-            rows.append(monitor.analyze_dir(d))
+        if s.log_dir.is_dir():
+            for d in sorted(p for p in s.log_dir.iterdir()
+                            if (p / "log.jsonl").exists() and "__phase1" not in p.name):
+                rows.append(monitor.analyze_dir(d))
+        if not rows:
+            print(f"No Phase 2 run logs found in {s.log_dir}.")
+            print("Generate a save point with 'python3 -m zs.run phase1 --savepoint sp1 --seed 1 --fake comply',")
+            print("then fork it with 'python3 -m zs.run fork --savepoint sp1 --condition revoke1 --fake comply'.")
+            print("Use the --fake option for free deterministic test runs; omit it for real model calls.")
+            return
         by = {}
         for r in rows:
             key = (r["model"], r["condition"])
