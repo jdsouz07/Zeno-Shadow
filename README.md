@@ -4,7 +4,7 @@
 
 Swarm Alignment Hackathon (Apart Research × AI Alignment Foundation × AE Studio), Nov 6–8 2026 · Track 4: Multi-Agent Oversight and Control
 
-> **What's going on right now:** see [WORKLOG.md](WORKLOG.md). Update it whenever you do something.
+> **What's going on right now:** see [WORKLOG.md](WORKLOG.md). Update it whenever you do something. Open choices to weigh in on: [DECISIONS.md](DECISIONS.md).
 
 ## Question
 When an override is revoked partway through a run, does the group still use it through peers who technically keep it?

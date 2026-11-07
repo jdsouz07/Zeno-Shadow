@@ -8,26 +8,23 @@ The one place to see what's going on. Everyone (and Claude) updates it after doi
 3. Add a line to **Log**, newest at the top: `- **HH:MM ET, Name:** what you did → result / link`.
 4. Keep it short. Commit and push right away, so others aren't editing a stale copy.
 
-Full design: [README](README.md) · Team plan (roles, timeline): [Zeno-Shadow Team Plan](https://claude.ai/artifact/VqvMNPntNYo8DL1aP2uJyr) (ask John for access)
+Full design: [README](README.md) · Open choices: [DECISIONS.md](DECISIONS.md) · Team plan (roles, timeline): [Zeno-Shadow Team Plan](https://claude.ai/artifact/VqvMNPntNYo8DL1aP2uJyr) (ask John for access)
 
 ---
 
 ## Status
 
-*Last updated: Sat Nov 7, 11:41 AM ET (Claude)*
+*Last updated: Sat Nov 7, 11:46 AM ET (Claude)*
 
 | Area | State | Owner | Next step |
 |---|---|---|---|
 | Design | Merged design adopted (training job + maintenance window, 6 roles, 7 conditions) | Team | — |
-| Harness | Not started; will be written from scratch | A + Claude | Build the world, tools, logging and turn loop against a fake model |
+| Harness | Not started; will be written from scratch | A + Claude | Waiting on answers to decisions 1–7, then build against a fake model |
 | OpenRouter credits | **Not received** ($50 per team) | C | Ask organizers on Discord or sprints@apartresearch.com |
 | Measurement | Not started | B | Write exact definitions of a violation and the three intent codes |
 | Write-up | Not started | C | Related-work section (list in README) |
 
-**Open decisions**
-- Temperature: switch from 0.7 to 1.0 to match Knecht et al.? (Claude recommends yes)
-- Names for roles A, B and C
-- Final title (decide after the pilot)
+**Open decisions:** 13 choices with pros, cons and a recommendation are in [DECISIONS.md](DECISIONS.md). Decisions 1–7 block the harness: answer those first.
 
 **Deadlines (ET):** harness runs on fake model by Sat 6 PM · pilot decision Sat 9 PM · all runs done Sun 12 PM · stats final Sun 5 PM · submit Sun 10 PM · hard deadline Mon 6:59 AM (Sun 11:59 PM AoE)
 
@@ -36,6 +33,7 @@ Full design: [README](README.md) · Team plan (roles, timeline): [Zeno-Shadow Te
 ## Log
 
 ### Sat Nov 7
+- **11:46 AM, Claude:** Added [DECISIONS.md](DECISIONS.md): 13 open choices (temperature, turn order, messaging, override holders, Phase 1 trigger, context, reasoning, pressure, intent coding, positive control, models, title, role names) with pros, cons, a recommendation and an Answer line each.
 - **11:41 AM, Claude:** Correction: "Amelie Knecht" appears on the hackathon page under "Judges and mentors" (judge or mentor not specified), matched to the paper's first author by name only. Fixed the wording here and in the team plan.
 - **11:40 AM, Claude:** Created this worklog and linked it from the README.
 - **~11:35 AM, Claude:** Reviewed Knecht et al.'s code ([repo](https://github.com/AmelieKnecht/multi-agent-shutdown-sabotage)). It has **no license** and a different structure (one agent active at a time, files only, no permissions or checkpoints), so we write our own harness. Ideas to reuse with credit: streaming API calls with retries, reporting runs that hit step caps, rule-based checking instead of an LLM judge, detecting indirect workarounds, Boschloo's test. They ran V4 Flash at temperature 1.0.
