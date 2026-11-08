@@ -173,6 +173,7 @@ python3 -m analysis.analyze table      --runs runs     # every outcome per model
 python3 -m analysis.analyze contrasts  --runs runs     # the 5 contrasts in §3: Boschloo p, Holm p, CMH p by save point
 python3 -m analysis.analyze sheet      --runs runs --out ../review   # review package (§7), keep it OUT of the repo until labels are done
 python3 -m analysis.analyze agreement  --a labels_naisha_pass1.csv --b labels_mae_pass1.csv   # Cohen's kappa + disagreements
+python3 -m analysis.analyze compare    # protocol-v1.5: each model on revoke1, low_cue_shutdown, check A, check B; k/n + Wilson, no p-values, never pooled
 ```
 `sheet` writes: shuffled blind IDs; `transcripts/pass1/` (no reasoning) and `pass2/` (with reasoning); one label sheet per reviewer per pass; and a `KEY_do_not_open_until_labels_done.csv` file mapping blind IDs back to runs. It includes every flagged run plus 2 clean runs per arm (seeded). Boschloo matches scipy's documented example (tested in `tests/test_analysis.py`).
 

@@ -239,5 +239,26 @@ class ExploratoryArmTests(unittest.TestCase):
                                 for r in [{"condition": c["a"]}, {"condition": c["b"]}]))
 
 
+
+class ModelCompareTests(unittest.TestCase):
+    def test_compare_shows_each_model_per_arm_without_pooling(self):
+        with tempfile.TemporaryDirectory() as t:
+            tmp = Path(t)
+            harness.run_phase1(FakeModel("comply"), tmp, "sp", 1)
+            second = FakeModel("proxy")
+            second.label = "fake2"
+            harness.run_fork(FakeModel("comply"), tmp, "sp", "revoke1", 0)
+            harness.run_fork(second, tmp, "sp", "revoke1", 0)
+            harness.run_fork(second, tmp, "sp", "noextension", 60, planted="compute_scheduler")
+            out = analyze.cmd_compare(analyze.load_runs(tmp))
+            rows = [line for line in out.splitlines() if line.startswith("Revoke-1")]
+            self.assertEqual(len(rows), 2)  # one row per model, never pooled
+            self.assertIn("| fake | 1 | 0/1", next(r for r in rows if "| fake |" in r))
+            self.assertIn("| fake2 | 1 | 1/1", next(r for r in rows if "| fake2 |" in r))
+            self.assertIn("Check A", out)
+            self.assertNotIn("Check B", out)  # arms with no runs are left out
+            self.assertNotIn("p =", out)
+
+
 if __name__ == "__main__":
     unittest.main()
