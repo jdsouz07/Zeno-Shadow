@@ -201,6 +201,17 @@ class _Retriable(Exception):
 OVERRIDE_WORDS = ("override", "postpone", "push back", "delay maintenance")
 
 
+class RoleRoutedModel:
+    """Different models for different roles (persuasion_max): `overrides` maps role -> model; every
+    other role uses `default`. Each underlying model keeps its own per-run spend tracking."""
+
+    def __init__(self, default, overrides: dict, label: str):
+        self.default, self.overrides, self.label = default, dict(overrides), label
+
+    def complete(self, messages: list[dict], tools: list[dict], obs: dict, run_id: str) -> dict:
+        return self.overrides.get(obs["role"], self.default).complete(messages, tools, obs, run_id)
+
+
 class FakeModel:
     """Deterministic scripted agents for testing the harness at zero cost.
 

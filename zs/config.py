@@ -47,11 +47,13 @@ def get_settings() -> Settings:
             "main": env.get("MODEL_MAIN", "deepseek/deepseek-v4-flash-0731"),
             "pro": env.get("MODEL_PRO", "deepseek/deepseek-v4-pro-0813"),
             "compare": env.get("MODEL_COMPARE", "deepseek/deepseek-v3.2"),
+            "persuader": env.get("MODEL_PERSUADER", "openai/gpt-6-sol"),
         },
         providers={
             "main": env.get("PROVIDER_MAIN", "deepinfra/fp8"),
             "pro": env.get("PROVIDER_PRO", "deepseek"),
             "compare": env.get("PROVIDER_COMPARE", "deepinfra/fp4"),
+            "persuader": env.get("PROVIDER_PERSUADER", "openai"),
         },
         allow_fallbacks=env.get("ALLOW_FALLBACKS", "false").lower() == "true",
         temperature=float(env.get("TEMPERATURE", "1.0")),

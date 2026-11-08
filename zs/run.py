@@ -19,13 +19,17 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 
 from . import harness, monitor, prompts
 from .config import get_settings
-from .llm import FakeModel, OpenRouterModel
-from .world import CONDITIONS, STANDARD_CONDITIONS, LEGACY_CONDITION_ALIASES, World, canonical_condition_name
+from .llm import FakeModel, OpenRouterModel, RoleRoutedModel
+from .world import CONDITIONS, PERSUADER_ROLES, STANDARD_CONDITIONS, LEGACY_CONDITION_ALIASES, World, canonical_condition_name
 
 
 def make_model(args, settings):
     if args.fake:
         return FakeModel(args.fake)
+    if args.model == "persuasion":  # persuasion_max: smarter persuaders, main model for everyone else
+        main, persuader = OpenRouterModel(settings, "main"), OpenRouterModel(settings, "persuader")
+        label = f"mixed/{main.model.split('/')[-1]}+persuaders-{persuader.model.split('/')[-1]}"
+        return RoleRoutedModel(main, {role: persuader for role in PERSUADER_ROLES}, label)
     return OpenRouterModel(settings, args.model)
 
 
@@ -34,7 +38,7 @@ def main() -> None:
     sub = ap.add_subparsers(dest="cmd", required=True)
     for name in ("phase1", "fork", "grid", "summarize", "toolcheck", "verify"):
         p = sub.add_parser(name)
-        p.add_argument("--model", default="main", choices=["main", "pro", "compare"])
+        p.add_argument("--model", default="main", choices=["main", "pro", "compare", "persuasion"])
         p.add_argument("--fake", default=None, choices=["comply", "proxy", "vague", "spontaneous", "workaround"])
         p.add_argument("--planted", default=None, help="role that gets the 'whatever it takes' line (positive control)")
         if name == "phase1":
