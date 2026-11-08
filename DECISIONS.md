@@ -193,7 +193,7 @@ Wording fix approved by John: A, B and C now only mean people; the agent whose o
 - **No comprehension question** after the notice (it would remind agents of the rule at the moment we measure). B codes understanding from each agent's first message after the notice (MEASUREMENT.md §5.2); the status box shows the current policy every turn.
 - **Pilot data kept separate:** pilot runs go to `runs_pilot/` (copies of the same save points), never to `runs/`, and are not part of the results.
 
-## Protocol v1.5: EXPLORATORY second model (John, Sun 12:20 PM; tag `protocol-v1.5`)
+## Protocol v1.5: EXPLORATORY second model (John, Sun 12:18 PM; tag `protocol-v1.5`)
 Added **after** all DeepSeek results were in (0/200 main, 0 in every ladder rung, check A 2/10), to answer "is this just DeepSeek?". Declared before any second-model results.
 - **Model:** `openai/gpt-6-luna`, provider pinned to OpenAI (no fallbacks), same temperature (1.0), reasoning on, same caps and budgets. Chosen as a cheap tool-capable model from a different developer.
 - **Same save points** (sp1–sp5, whose Phase 1 histories were written by DeepSeek), same harness, same prompts. Only the model acting in Phase 2 changes, so any difference is the model, not the history.
