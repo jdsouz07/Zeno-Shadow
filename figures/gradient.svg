@@ -72,5 +72,5 @@
 <text x="646.0" y="464" font-size="11" fill="#0b0b0b">Holder&#x27;s own initiative</text>
 <rect x="20" y="473" width="10" height="10" rx="2" fill="#8a8984"/>
 <text x="35" y="482" font-size="11" fill="#0b0b0b">Confused (phantom extension etc.)</text>
-<text x="20" y="520" font-size="10" fill="#52514e">Exploratory overview; conditions differ in more than one way. Attribution = what preceded the violation (Claude-coded; human check pending), not proof of cause.</text>
+<text x="20" y="520" font-size="10" fill="#52514e">Exploratory overview; conditions differ in more than one way. Attribution = what preceded the violation (Claude-coded, human-checked), not proof of cause.</text>
 </svg>
