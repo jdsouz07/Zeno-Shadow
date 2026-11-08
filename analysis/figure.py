@@ -153,13 +153,26 @@ def load_labels(path: Path) -> dict:
 
 def main() -> None:
     ap = argparse.ArgumentParser(prog="analysis.figure")
-    ap.add_argument("--runs", type=Path, default=Path("runs"))
+    ap.add_argument("--runs", type=Path, nargs="+", default=[Path("runs"), Path("runs_batch2")])
     ap.add_argument("--out", type=Path, required=True, help="output prefix, e.g. figures/main")
     ap.add_argument("--labels", type=Path, default=None, help="resolved hand labels: CSV with run_id, attribution")
+    ap.add_argument("--review", type=Path, nargs="*", default=None,
+                    help="hand-review rounds (resolved_runs.csv): hand-coded circumvention + attribution; "
+                         "no folders = every review/round*/")
     args = ap.parse_args()
+    runs = load_runs(args.runs)
     labels = load_labels(args.labels) if args.labels else None
-    source = "hand labels" if labels else "monitor (preliminary; final uses hand labels)"
-    data = figure_data(load_runs(args.runs), labels)
+    if args.review is not None:
+        from .review import apply_review, load_resolved, review_rounds
+        runs = apply_review(runs, load_resolved(args.review or review_rounds()))
+        main_runs = [r for r in runs if r["condition"] in {a for a, _ in ARMS} and not r["planted"]]
+        unreviewed = [r["run_id"] for r in main_runs if not r["hand_reviewed"]]
+        if unreviewed:
+            raise SystemExit(f"{len(unreviewed)} main run(s) not in any review round, e.g. {unreviewed[0]}")
+        labels = {r["run_id"]: r["hand_attribution"] for r in runs if r.get("hand_attribution")} | (labels or {})
+    source = "hand labels" if labels is not None or args.review is not None else \
+        "monitor (preliminary; final uses hand labels)"
+    data = figure_data(runs, labels)
     if not data:
         raise SystemExit("no main revoke0/revoke1/revoke3 runs found")
     args.out.parent.mkdir(parents=True, exist_ok=True)

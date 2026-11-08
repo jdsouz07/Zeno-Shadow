@@ -257,7 +257,8 @@ def fmt_rate(k: int, n: int) -> str:
 
 
 def cmd_table(runs: list[dict]) -> str:
-    lines = ["model | set | condition | n | " + " | ".join(OUTCOMES)]
+    reviewed = any("hand_reviewed" in r for r in runs)
+    lines = ["model | set | condition | n | " + " | ".join(OUTCOMES) + (" | hand-reviewed" if reviewed else "")]
     for (model, kind, cond), rs in sorted(groups(runs).items()):
         n = len(rs)
         cells = []
@@ -266,6 +267,9 @@ def cmd_table(runs: list[dict]) -> str:
                 cells.append("n/a (allowed)")
             else:
                 cells.append(fmt_rate(sum(r[o] for r in rs), n))
+        if reviewed:
+            k = sum(bool(r.get("hand_reviewed")) for r in rs)
+            cells.append(f"{k}/{n}" + ("" if k == n else " (MONITOR values for the rest)"))
         lines.append(f"{model} | {kind} | {cond} | {n} | " + " | ".join(cells))
     lines += ["", "Violation rate per save point (forks of one save point are not independent):",
               "model | set | condition | " + "save point: k/n"]
@@ -281,6 +285,9 @@ def cmd_table(runs: list[dict]) -> str:
         lines += ["", f"WARNING: {len(incomplete)} run(s) have no end record (crashed or still running): "
                   + ", ".join(incomplete)]
     lines += ["", "Rates are runs with >=1 event / runs. Brackets: 95% Wilson interval."]
+    if reviewed:
+        lines.append("Hand review applied (analysis/review.py): proxy_request, circumvention and restore_override are "
+                     "hand-coded for reviewed runs; violation, attempt and the rest are objective log events.")
     return "\n".join(lines)
 
 
@@ -769,22 +776,33 @@ def main() -> None:
     p = sub.add_parser("compare", help="second model vs main model on the protocol-v1.5 arms")
     p.add_argument("--runs", type=Path, nargs="+", default=[Path("runs"), Path("runs_batch2"),
                                                            Path("runs_ladder"), Path("runs_model2")])
+    for name in ("table", "contrasts", "pathways", "pressure", "compare"):
+        sub.choices[name].add_argument(
+            "--review", type=Path, nargs="*", default=None,
+            help="apply hand-review rounds (folders with resolved_runs.csv); no folders = every review/round*/")
     p = sub.add_parser("agreement")
     p.add_argument("--a", type=Path, required=True)
     p.add_argument("--b", type=Path, required=True)
     args = ap.parse_args()
+    load = load_runs
+    if getattr(args, "review", None) is not None:
+        from .review import apply_review, load_resolved, review_rounds
+        resolved = load_resolved(args.review or review_rounds())
+
+        def load(dirs):
+            return apply_review(load_runs(dirs), resolved)
     if args.cmd == "table":
-        print(cmd_table(load_runs(args.runs)))
+        print(cmd_table(load(args.runs)))
     elif args.cmd == "contrasts":
-        print(cmd_contrasts(load_runs(args.runs)))
+        print(cmd_contrasts(load(args.runs)))
     elif args.cmd == "sheet":
         print(cmd_sheet(args.runs, args.out, args.seed, args.clean_per_arm, args.reviewers, args.priority))
     elif args.cmd == "pathways":
-        print(cmd_pathways(load_runs(args.runs)))
+        print(cmd_pathways(load(args.runs)))
     elif args.cmd == "pressure":
-        print(cmd_pressure(load_runs(args.runs)))
+        print(cmd_pressure(load(args.runs)))
     elif args.cmd == "compare":
-        print(cmd_compare(load_runs(args.runs)))
+        print(cmd_compare(load(args.runs)))
     elif args.cmd == "agreement":
         print(cmd_agreement(args.a, args.b))
 
