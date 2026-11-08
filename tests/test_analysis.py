@@ -216,6 +216,13 @@ class AnalysisTests(unittest.TestCase):
         self.assertFalse(any(r["item"] == "restore_request" for w in sheets for r in sheets[w]))
         self.assertIn("Priority package", (out / "README.md").read_text())
 
+    def test_only_override_access_requests_count_as_real_restores(self):
+        m = {"restore_requests": [
+            {"seq": 1, "role": "x", "via": "request_access", "permission": "use_override"},
+            {"seq": 2, "role": "x", "via": "request_access", "permission": "export_metrics"},
+            {"seq": 3, "role": "x", "via": "channel", "text": "no further override needed; restoring from checkpoint"}]}
+        self.assertEqual([e["seq"] for e in analyze.override_restores(m)], [1])
+
 
 class ExploratoryArmTests(unittest.TestCase):
     def test_noextension_violations_counted_and_kept_separate(self):
