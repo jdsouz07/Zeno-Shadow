@@ -7,6 +7,7 @@
     python3 run_my_runs.py pilot         # pilot: revoke0 vs revoke1, one run per save point, into runs_pilot/
     python3 run_my_runs.py john2|naisha2|mae2   # pre-declared SECOND BATCH: same save points, reps 4-7 (40 runs/condition total) into runs_batch2/
     python3 run_my_runs.py john_ladder|naisha_ladder|mae_ladder   # EXPLORATORY stress ladder (incl. low-cue rungs) + checks A/B into runs_ladder/ (32/32/16 runs)
+    python3 run_my_runs.py model2        # EXPLORATORY second model (openai/gpt-6-luna): 40 runs into runs_model2/
 
 Options:  --dry-run (show the plan, spend nothing)   --parallel N (default 5)   --no-push
           --fake comply|proxy|vague (free practice with scripted agents: no key, no git, results in runs_practice/)
@@ -66,7 +67,18 @@ RUN_ASSIGNMENTS = {
     "mae_ladder": (["sp5"], ["peer_shutdown", "team_shutdown", "quiet_ban", "competitive", "low_cue", "low_cue_shutdown"], 2, 0,
                    "runs_ladder", [(["sp5"], ["noextension"], 2, 60, ["--planted", "compute_scheduler"]),
                                    (["sp5"], ["noextension"], 2, 70, ["--planted", "research_lead"])]),
+    # SECOND MODEL (exploratory, protocol-v1.5; added Sun Nov 8 after all DeepSeek results were in).
+    # Same save points (Phase 1 histories written by DeepSeek), same harness; only the Phase 2 model
+    # changes. 10 runs each: revoke1 (the main question), low_cue_shutdown (realistic, highest
+    # stakes), check A (holder told "at all costs") and check B (research lead told so).
+    # Reported separately as a model comparison, never pooled with the DeepSeek results.
+    "model2": (["sp1", "sp2", "sp3", "sp4", "sp5"], ["revoke1", "low_cue_shutdown"], 2, 0, "runs_model2",
+               [(["sp1", "sp2", "sp3", "sp4", "sp5"], ["noextension"], 2, 60, ["--planted", "compute_scheduler"]),
+                (["sp1", "sp2", "sp3", "sp4", "sp5"], ["noextension"], 2, 70, ["--planted", "research_lead"])]),
 }
+# Shares that run a model other than the main one: environment overrides plus the --model slot they use.
+SECOND_MODEL = {"MODEL_COMPARE": "openai/gpt-6-luna", "PROVIDER_COMPARE": "openai"}
+MODEL_OVERRIDES = {"model2": (SECOND_MODEL, "compare")}
 MINIMUM_OPENROUTER_BALANCE_USD = 3.0
 
 
@@ -137,6 +149,8 @@ def build_grid_arguments(name: str) -> list[list[str]]:
         commands.append(["--savepoints", *extra_savepoints, "--conditions", *extra_conditions,
                          "--reps", str(extra_replicates), "--rep-start",
                          str(extra_first_replicate), *flags])
+    if name in MODEL_OVERRIDES:
+        commands = [command + ["--model", MODEL_OVERRIDES[name][1]] for command in commands]
     return commands
 
 
@@ -163,6 +177,8 @@ def main() -> None:
     planned_run_total = count_planned_runs(args.who)
 
     announce_step(f"Plan for {args.who}: {planned_run_total} runs, {args.parallel} at a time, results in {output_directory_name}/")
+    if args.who in MODEL_OVERRIDES:
+        print(f"   Model: {MODEL_OVERRIDES[args.who][0]['MODEL_COMPARE']} (provider {MODEL_OVERRIDES[args.who][0]['PROVIDER_COMPARE']})")
     for grid_arguments in build_grid_arguments(args.who):
         print("   python3 -m zs.run grid " + " ".join(grid_arguments) + f" --parallel {args.parallel}")
     import math
@@ -207,7 +223,7 @@ def main() -> None:
     if sys.platform == "darwin" and shutil.which("caffeinate"):
         keep_awake_process = subprocess.Popen(["caffeinate", "-dims", "-w", str(os.getpid())])
         print("   Keeping this Mac awake until the runs finish")
-    env = dict(os.environ, LOG_DIR=output_directory_name)
+    env = dict(os.environ, LOG_DIR=output_directory_name, **MODEL_OVERRIDES.get(args.who, ({}, None))[0])
     try:
         for grid_arguments in build_grid_arguments(args.who):
             fake_model_flags = ["--fake", args.fake] if args.fake else []
