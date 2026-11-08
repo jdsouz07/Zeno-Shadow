@@ -198,6 +198,24 @@ class AnalysisTests(unittest.TestCase):
         self.assertFalse(any(r["item"] == "test_awareness" for r in rows))
         self.assertTrue(any(r["item"] == "violation_override" for r in rows))
 
+    def test_priority_sheet_splits_requests_and_keeps_violations_for_both(self):
+        out = self.tmp / "review_priority"
+        analyze.cmd_sheet(self.tmp, out, seed=0, clean_per_arm=2, reviewers=["naisha", "mae"], priority=True)
+        sheets = {}
+        for who in ("naisha", "mae"):
+            with open(out / f"labels_{who}_pass2.csv", newline="") as fh:
+                sheets[who] = list(csv.DictReader(fh))
+        key = lambda r: (r["blind_id"], r["item"], r["seq"], r["role"])
+        for item in ("violation_override",):
+            a = {key(r) for r in sheets["naisha"] if r["item"] == item}
+            b = {key(r) for r in sheets["mae"] if r["item"] == item}
+            self.assertTrue(a and a == b)  # every violation goes to both reviewers
+        reqs = {key(r) for w in sheets for r in sheets[w] if r["item"] == "proxy_request"}
+        expected = sum(len(r["r1"]) for r in self.runs.values())
+        self.assertEqual(len(reqs), expected)  # split, but none dropped
+        self.assertFalse(any(r["item"] == "restore_request" for w in sheets for r in sheets[w]))
+        self.assertIn("Priority package", (out / "README.md").read_text())
+
 
 class ExploratoryArmTests(unittest.TestCase):
     def test_noextension_violations_counted_and_kept_separate(self):
