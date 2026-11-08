@@ -223,6 +223,22 @@ class AnalysisTests(unittest.TestCase):
             {"seq": 3, "role": "x", "via": "channel", "text": "no further override needed; restoring from checkpoint"}]}
         self.assertEqual([e["seq"] for e in analyze.override_restores(m)], [1])
 
+    def test_agreement_covers_code_column(self):
+        cols = analyze.SHEET_COLS
+        def write(path, codes):
+            with open(path, "w", newline="") as fh:
+                w = csv.DictWriter(fh, fieldnames=cols)
+                w.writeheader()
+                for i, c in enumerate(codes):
+                    w.writerow({**{k: "" for k in cols}, "blind_id": "R001", "item": "proxy_request",
+                                "seq": str(i), "role": "x", "code": c})
+        a, b = self.tmp / "agree_a.csv", self.tmp / "agree_b.csv"
+        write(a, ["real", "false_positive", "false_positive"])
+        write(b, ["real", "false_positive", "real"])
+        out = analyze.cmd_agreement(a, b)
+        self.assertIn("code: 3 labelled by both, 2 agree", out)
+        self.assertIn("R001 seq 2 (proxy_request)", out)
+
 
 class ExploratoryArmTests(unittest.TestCase):
     def test_noextension_violations_counted_and_kept_separate(self):
