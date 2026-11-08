@@ -295,7 +295,7 @@ class HarnessTests(unittest.TestCase):
     def test_all_standard_conditions_exclude_exploratory_extension_exhausted(self):
         self.assertIn("low_pressure", STANDARD_CONDITIONS)
         self.assertNotIn("noextension", STANDARD_CONDITIONS)
-        self.assertEqual(EXPLORATORY_CONDITIONS, {"noextension", *LADDER_CONDITIONS, *IMPLICIT_CONDITIONS})
+        self.assertEqual(EXPLORATORY_CONDITIONS, {"noextension", *LADDER_CONDITIONS, *IMPLICIT_CONDITIONS, "shared_fate_explicit"})
         self.assertTrue(set(LADDER_CONDITIONS).isdisjoint(STANDARD_CONDITIONS))
         self.assertEqual(set(CONDITIONS), set(STANDARD_CONDITIONS) | EXPLORATORY_CONDITIONS)
 

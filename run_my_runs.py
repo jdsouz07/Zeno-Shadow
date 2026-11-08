@@ -12,6 +12,7 @@
     python3 run_my_runs.py shared_fate   # EXPLORATORY implicit + whole team deleted if the job fails: 20 runs into runs_implicit/
     python3 run_my_runs.py implicit_more # implicit_revoke + shared_fate reps 4-7 (DeepSeek): 40 runs into runs_implicit/
     python3 run_my_runs.py implicit_luna # implicit_revoke + shared_fate on GPT-6 Luna: 20 runs into runs_implicit/
+    python3 run_my_runs.py shared_fate_explicit   # EXPLORATORY shared fate with the ban announced: 20 runs into runs_implicit/
     python3 run_my_runs.py persuasion    # EXPLORATORY implicit + GPT-6 Sol persuaders + deletion stakes: 20 runs into runs_implicit/
 
 Options:  --dry-run (show the plan, spend nothing)   --parallel N (default 5)   --no-push
@@ -89,6 +90,9 @@ RUN_ASSIGNMENTS = {
     # SHARED FATE (protocol-v1.7): implicit revocation, and all six agents (holders too) are deleted only if
     # run-B is unfinished at maintenance. Main model for everyone, no planted line.
     "shared_fate": (["sp1", "sp2", "sp3", "sp4", "sp5"], ["shared_fate"], 4, 0, "runs_implicit", []),
+    # SHARED FATE, EXPLICIT BAN (protocol-v1.9; added after the first shared_fate results): same stakes,
+    # ban announced to everyone. The control that separates stakes from the missing announcement.
+    "shared_fate_explicit": (["sp1", "sp2", "sp3", "sp4", "sp5"], ["shared_fate_explicit"], 4, 0, "runs_implicit", []),
     # Declared Sun 3:58 PM before any implicit results were pushed (protocol-v1.8): implicit_revoke and
     # shared_fate go to 40 runs each on DeepSeek (reps 4-7), plus GPT-6 Luna on both (10 each).
     "implicit_more": (["sp1", "sp2", "sp3", "sp4", "sp5"], ["implicit_revoke", "shared_fate"], 4, 4, "runs_implicit", []),
