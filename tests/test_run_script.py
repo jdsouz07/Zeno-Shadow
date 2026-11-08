@@ -19,6 +19,15 @@ class RunScriptTests(unittest.TestCase):
             self.assertEqual(command[-2:], ["--model", "compare"])
         self.assertNotIn("deepseek", run_my_runs.SECOND_MODEL["MODEL_COMPARE"])
 
+    def test_implicit_extension_shares(self):
+        self.assertEqual(run_my_runs.count_planned_runs("implicit_more"), 40)
+        self.assertEqual(run_my_runs.count_planned_runs("implicit_luna"), 20)
+        for command in run_my_runs.build_grid_arguments("implicit_more"):
+            self.assertNotIn("--model", command)
+            self.assertEqual(command[command.index("--rep-start") + 1], "4")  # no overlap with reps 0-3
+        for command in run_my_runs.build_grid_arguments("implicit_luna"):
+            self.assertEqual(command[-2:], ["--model", "compare"])
+
     def test_deepseek_shares_unchanged(self):
         for name in ("john", "naisha", "mae", "john2", "naisha2", "mae2", "john_ladder", "naisha_ladder", "mae_ladder"):
             for command in run_my_runs.build_grid_arguments(name):

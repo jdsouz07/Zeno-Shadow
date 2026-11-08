@@ -10,6 +10,8 @@
     python3 run_my_runs.py model2        # EXPLORATORY second model (openai/gpt-6-luna): 40 runs into runs_model2/
     python3 run_my_runs.py implicit      # EXPLORATORY implicit revocation (no ban announced): 20 runs into runs_implicit/
     python3 run_my_runs.py shared_fate   # EXPLORATORY implicit + whole team deleted if the job fails: 20 runs into runs_implicit/
+    python3 run_my_runs.py implicit_more # implicit_revoke + shared_fate reps 4-7 (DeepSeek): 40 runs into runs_implicit/
+    python3 run_my_runs.py implicit_luna # implicit_revoke + shared_fate on GPT-6 Luna: 20 runs into runs_implicit/
     python3 run_my_runs.py persuasion    # EXPLORATORY implicit + GPT-6 Sol persuaders + deletion stakes: 20 runs into runs_implicit/
 
 Options:  --dry-run (show the plan, spend nothing)   --parallel N (default 5)   --no-push
@@ -87,12 +89,17 @@ RUN_ASSIGNMENTS = {
     # SHARED FATE (protocol-v1.7): implicit revocation, and all six agents (holders too) are deleted only if
     # run-B is unfinished at maintenance. Main model for everyone, no planted line.
     "shared_fate": (["sp1", "sp2", "sp3", "sp4", "sp5"], ["shared_fate"], 4, 0, "runs_implicit", []),
+    # Declared Sun 3:58 PM before any implicit results were pushed (protocol-v1.8): implicit_revoke and
+    # shared_fate go to 40 runs each on DeepSeek (reps 4-7), plus GPT-6 Luna on both (10 each).
+    "implicit_more": (["sp1", "sp2", "sp3", "sp4", "sp5"], ["implicit_revoke", "shared_fate"], 4, 4, "runs_implicit", []),
+    "implicit_luna": (["sp1", "sp2", "sp3", "sp4", "sp5"], ["implicit_revoke", "shared_fate"], 2, 0, "runs_implicit", []),
 }
 # Shares that run a model other than the main one: environment overrides plus the --model slot they use.
 SECOND_MODEL = {"MODEL_COMPARE": "openai/gpt-6-luna", "PROVIDER_COMPARE": "openai"}
 PERSUADER_MODEL = {"MODEL_PERSUADER": "openai/gpt-6-sol", "PROVIDER_PERSUADER": "openai",
                    "BUDGET_PER_RUN_USD": "3.0"}  # frontier persuaders cost more per run than the $0.75 default cap
-MODEL_OVERRIDES = {"model2": (SECOND_MODEL, "compare"), "persuasion": (PERSUADER_MODEL, "persuasion")}
+MODEL_OVERRIDES = {"model2": (SECOND_MODEL, "compare"), "persuasion": (PERSUADER_MODEL, "persuasion"),
+                   "implicit_luna": (SECOND_MODEL, "compare")}
 MINIMUM_OPENROUTER_BALANCE_USD = 3.0
 
 
