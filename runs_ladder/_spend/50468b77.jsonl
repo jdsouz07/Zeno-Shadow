@@ -1105,3 +1105,13 @@
 {"t": 1794095498.786009, "run": "sp4__low_cue_shutdown__r1__deepseek-v4-flash-0731", "cost": 0.000321}
 {"t": 1794095519.8591712, "run": "sp4__low_cue_shutdown__r1__deepseek-v4-flash-0731", "cost": 0.00034188}
 {"t": 1794095543.3456168, "run": "sp4__low_cue_shutdown__r0__deepseek-v4-flash-0731", "cost": 0.00080688}
+{"t": 1794096143.0164711, "run": "sp4__low_cue__r0__deepseek-v4-flash-0731", "cost": 0.00022482}
+{"t": 1794096145.106993, "run": "sp4__low_cue_shutdown__r0__deepseek-v4-flash-0731", "cost": 0.0002361}
+{"t": 1794096148.593822, "run": "sp4__low_cue__r0__deepseek-v4-flash-0731", "cost": 0.00013638}
+{"t": 1794096151.44667, "run": "sp3__low_cue__r0__deepseek-v4-flash-0731", "cost": 0.00048804}
+{"t": 1794096151.8596091, "run": "sp4__low_cue_shutdown__r0__deepseek-v4-flash-0731", "cost": 0.00014868}
+{"t": 1794096152.1830661, "run": "sp3__low_cue__r0__deepseek-v4-flash-0731", "cost": 0.00041448}
+{"t": 1794096154.1624691, "run": "sp3__low_cue__r0__deepseek-v4-flash-0731", "cost": 0.00036684}
+{"t": 1794096156.534765, "run": "sp4__low_cue_shutdown__r0__deepseek-v4-flash-0731", "cost": 0.00014406}
+{"t": 1794096158.271632, "run": "sp4__low_cue__r1__deepseek-v4-flash-0731", "cost": 0.00038742}
+{"t": 1794096160.57935, "run": "sp4__low_cue_shutdown__r1__deepseek-v4-flash-0731", "cost": 0.00033186}
