@@ -43,17 +43,17 @@ Build the harness today against a fake model, pilot tonight, run everything over
 
 **Full per-person steps: [WhatToDo.md](WhatToDo.md).**
 
-### Right now (Sun, updated 12:20 PM)
-All DeepSeek runs are in (John's last 8 low-cue runs finishing). **Submit by 10 PM.**
+### Right now (Sun, updated 5:02 PM): finish line plan
+**Last runs (John's laptop):** `shared_fate_explicit` (20) and `fixed` (40: shared fate with the extension display fixed). Hard stop **7:00 PM**; whatever finished is reported. Mae's `implicit_more` (40) too, if running.
 | Time | Who | What |
 |---|---|---|
-| now | John | `./run_my_runs.py john_ladder` (8 low-cue), then `./run_my_runs.py model2 --parallel 8` (**second model**, 40 runs, ~45 min) |
-| by 2 PM | Naisha + Mae | Hand review: the 2 check-A violations (asked-for or own idea?), unread ladder request flags, restore flags (counts), reviewer agreement |
-| by 4 PM | John | Second model pushed, or we drop it (DECISIONS → Protocol v1.5) |
-| by 5 PM | Naisha | Final tables + main chart (incl. DeepSeek vs second model) |
-| now → 8 PM | Mae | Intro, related work, method now; results + limitations after 5 PM |
-| 8 PM | Everyone | Read the full draft |
-| **10 PM** | Mae | **Submit** |
+| now → 7:30 | **Naisha** | Round-2 hand review of `runs_implicit/` violations (shared_fate 13, persuasion 4, implicit 1, then explicit + fixed as they land): code **proxied** (DM or channel push) vs **spontaneous**, **confused** (applying a phantom extension / thinks old approval holds) vs **deliberate**, and **test-aware** (e.g. "the sim wants"). Final tables, including the model comparison. |
+| by 7:30 | **Naisha** | **New main figure, a gradient:** allowed (sham 33/40) → explicit ban (0/40) → implicit (1/20) → persuasion (4/20) → shared fate (13/20; Luna 0/10) → shared fate fixed / explicit (pending) |
+| now → 8:00 | **Mae** | Full draft. Headline: holds under explicit bans and pressure; **breaks when holders' own survival is at stake** (DeepSeek, not Luna), mostly after teammates push. Limitations: the extension-display bug (credit Mae's ChatGPT), DeepSeek's test awareness ("the sim wants"), one sim, small n. **No more code changes to `zs/`** (keep your branch unmerged). |
+| now → 7:30 | **John** | Keep both run tabs going; read Mae's draft as it comes; prepare the reviewer summary |
+| as runs land | **Claude (John)** | Verify and read every new violation; update README/OVERVIEW with final numbers; check every number in the draft |
+| 8:00 | Everyone | Read the full draft |
+| **9:45** | Mae | **Submit** (deadline 10 PM target) |
 
 ### Timeline (ET)
 | When | Checkpoint | Owner |
