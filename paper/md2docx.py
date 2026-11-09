@@ -132,7 +132,7 @@ def inline(p, tok, size=None, base_italic=False):
         elif t == "image":
             img = BASE / c.attrs["src"]
             p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-            p.add_run().add_picture(str(img), width=Inches(6.3))
+            p.add_run().add_picture(str(img), width=Inches(5.2))
         elif t in ("html_inline",): pass
 
 # ---------- title block ----------
@@ -210,7 +210,6 @@ while i < len(toks):
                 p.paragraph_format.space_before = Pt(10)
                 add_text(p, caveat, italic=True, size=9)
                 ABSTRACT = False
-                doc.add_page_break()
             style = {2: "Heading 1", 3: "Heading 2", 4: "Heading 3"}[lvl]
             if lvl == 2 and txt in ("Limitations", "Future Work"):
                 style = "Heading 2"
@@ -237,8 +236,7 @@ while i < len(toks):
             depth = len(list_stack)
             pf.left_indent, pf.first_line_indent = Inches(0.3 * depth), Inches(-0.25)
             pf.space_after = Pt(3)
-            p.add_run(f"{list_stack[-1][1]}.\t")
-            pf.tab_stops.add_tab_stop(Inches(0.3 * depth))
+            p.add_run(f"{list_stack[-1][1]}. ")
             list_stack[-1][1] += 1
         elif list_stack and toks[i - 1].type != "list_item_open":
             pf.left_indent = Inches(0.3 * len(list_stack))
