@@ -4,7 +4,7 @@ HOW TO USE THIS FILE (Mae): this is the whole report in one place. Edit it direc
 - Abstract and sections 4-6 were drafted by Claude (John). Every number was checked against the run files on Sun Nov 8, ~11 PM ET.
 - [Square brackets] = something a human still has to check or fill in.
 - Figure 1 is paper/figure1.png (made by analysis/make_figure1.py).
-- 11:30 PM revision (after comparing with the official rubric and past Apart winners): new title and named phenomenon, Track 4 oversight framing, numbered key findings, novelty vs Knecht/Kanchi, confound paragraph, CIs in tables, defender checklist, REQUIRED Limitations & Dual-Use appendix, exact prompts, prior-work statement, full references. Mae's original title: "Can AI Agents Circumvent Tool Restrictions Through Their Peers?" (can be kept as a subtitle).
+- 11:10 PM revision (after comparing with the official rubric and past Apart winners): new title and named phenomenon, Track 4 oversight framing, numbered key findings, novelty vs Knecht/Kanchi, confound paragraph, CIs in tables, defender checklist, REQUIRED Limitations & Dual-Use appendix, exact prompts, prior-work statement, full references. Mae's original title: "Can AI Agents Circumvent Tool Restrictions Through Their Peers?" (can be kept as a subtitle).
 - Page limit is 8 pages excluding references and appendices.
 -->
 
@@ -466,5 +466,5 @@ We used LLMs to come up with our idea. We were inspired by quantum physics and a
 - Section 3.3 now has a short "Exploratory stress tests" paragraph, so the extra conditions are introduced before Results.
 - The implicit condition now says that only the Infrastructure Engineer gets the IT ticket, and that the roster's "access does not mean authorized" note is removed.
 - Turned the contributions and roles into lists, and added the abstract, sections 4–6, Figure 1, appendices and references.
-- 11:30 PM revision: new title, the named "quiet-revocation gap", key-findings list, Track 4 oversight framing, novelty vs Knecht/Kanchi, a 2.4 on causal attribution, the design-note confound, CIs, alternative explanations, the deployer checklist, the required Limitations & Dual-Use appendix (A), exact prompt texts (C) and full references.
+- 11:10 PM revision: new title, the named "quiet-revocation gap", key-findings list, Track 4 oversight framing, novelty vs Knecht/Kanchi, a 2.4 on causal attribution, the design-note confound, CIs, alternative explanations, the deployer checklist, the required Limitations & Dual-Use appendix (A), exact prompt texts (C) and full references.
 - Removed the template guidance text.
