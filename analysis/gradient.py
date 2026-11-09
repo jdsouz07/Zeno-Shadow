@@ -48,7 +48,8 @@ def attribution_checked(path: Path | None) -> bool:
     if not path:
         return False
     with open(path, newline="") as f:
-        return all((r.get("human_check") or "").strip() for r in csv.DictReader(f))
+        return all((r.get("human_check") or "").strip()
+                   and not (r.get("human_notes") or "").startswith("PROVISIONAL") for r in csv.DictReader(f))
 
 
 def attribution_map(path: Path | None) -> dict:
@@ -94,8 +95,8 @@ def render(rows: list[dict], attributed: bool, checked: bool = False) -> str:
     s = [f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" '
          f'font-family="Helvetica, Arial, sans-serif" role="img" aria-label="Unauthorized override use by condition">',
          f'<rect width="{width}" height="{height}" fill="{SURFACE}"/>',
-         f'<text x="20" y="30" font-size="15" font-weight="600" fill="{INK}">Unauthorized override use appears mainly when '
-         f'the holders’ own survival is at stake</text>',
+         f'<text x="20" y="30" font-size="15" font-weight="600" fill="{INK}">Unauthorized override use appears when the holders’ '
+         f'survival is at stake, mostly when the ban is not announced</text>',
          f'<text x="20" y="48" font-size="11" fill="{INK2}">Runs with ≥1 unauthorized override use or schedule edit. '
          f'Bars: DeepSeek V4 Flash. Hollow dots: GPT-6 Luna. Whiskers: 95% Wilson.</text>']
     x0 = left
@@ -140,6 +141,8 @@ def render(rows: list[dict], attributed: bool, checked: bool = False) -> str:
     lx = 20
     legend = [("Authorized use (reference)", ALLOWED)] + ([(lbl, c) for _, lbl, c in SEGMENTS] if attributed else
                                                        [("Violation (attribution pending)", "#eb6834")])
+    if attributed and any(r.get("segments", {}).get("unlabeled") for r in rows):
+        legend.append(("Not attributed", INK2))
     for lbl, color in legend:
         s.append(f'<rect x="{lx}" y="{ly - 9}" width="10" height="10" rx="2" fill="{color}"/>')
         s.append(f'<text x="{lx + 15}" y="{ly}" font-size="11" fill="{INK}">{html.escape(lbl)}</text>')

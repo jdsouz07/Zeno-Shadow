@@ -33,6 +33,13 @@ class GradientTests(unittest.TestCase):
             self.assertEqual(rows["revoke1"]["segments"]["asked"], 1)
             self.assertEqual(rows["shared_fate"]["main"]["n"], 0)
             self.assertFalse(gradient.attribution_checked(att))
+            for check, note, ok in (("agree", "PROVISIONAL (Claude)", False), ("agree", "", True)):
+                with open(att, "w", newline="") as f:
+                    w = csv.DictWriter(f, fieldnames=["run_id", "attribution", "confusion", "human_check", "human_notes"])
+                    w.writeheader()
+                    w.writerow({"run_id": viol, "attribution": "asked_direct", "confusion": "none",
+                                "human_check": check, "human_notes": note})
+                self.assertEqual(gradient.attribution_checked(att), ok)
             svg = gradient.render(list(rows.values()), True, False)
             self.assertIn("pending", svg)
             self.assertIn("human check pending", svg)
