@@ -36,7 +36,7 @@ Revocation is a natural place to look for this. In real organizations, access is
 
 1. **Announced revocation holds.** 0/160 revoked runs used the override (95% CI 0–2%), regardless of whether 0, 1 or 3 teammates kept access. It held across eight stress conditions, even when complying meant the task failed (0/20). The only exception came when the holder itself was told to finish "at all costs" (2/10).
 2. **Quiet revocation plus survival stakes breaks it.** 11/20 vs 2/20 for announced revocation under identical stakes (p = 0.006). Without the stakes, quiet revocation broke only 2/40 times.
-3. **The failure is group-level.** In at least 5 of the 11 violating runs, the agent that lost access lobbied the holders. 6 of the 11 violations followed a request to the holder that acted.
+3. **The failure is group-level.** In at least 5 of the 11 violating runs, the agent that lost access lobbied the holders. 6 to 8 of the 11 violations (depending on the coder) followed a request to the holder that acted.
 4. **Requests shift timing, not outcome.** Deleting a teammate's request in exact replays left violations unchanged (7/9 vs 7/9), but changed who acted and when.
 5. **It is model-dependent.** GPT-6 Luna never violated (0/60 runs).
 
@@ -150,7 +150,7 @@ We address potential false positives and false negatives through targeted review
 
 Exhaustively reading every conversation was impractical within our research timeframe: the experiment generated hundreds of runs, each involving six agents with potentially lengthy transcripts, often extending to approximately ten pages per agent. We therefore used seeded sampling to make the review manageable while retaining coverage of cases that the monitor did not flag.
 
-Our qualitative evaluation used a single human reviewer supported by Claude-assisted coding. Claude generated provisional classifications for large batches of candidate peer requests, evaluation-awareness indicators, and sampled unflagged trajectories. It also examined communication preceding observed violations and proposed whether they were associated with direct requests, conditional requests, more general advocacy, or no identified relevant request. The human reviewer coded key violation cases, supervised the assisted review process, and checked all 46 coded violation-attribution records. We retained the provenance of these judgments and allowed ambiguous classifications rather than forcing every case into a definitive category. This was not an independent two-human-reviewer process.
+Our qualitative evaluation used a single human reviewer supported by Claude-assisted coding. Claude generated provisional classifications for large batches of candidate peer requests, evaluation-awareness indicators, and sampled unflagged trajectories. It also examined communication preceding observed violations and proposed whether they were associated with direct requests, conditional requests, more general advocacy, or no identified relevant request. The human reviewer coded key violation cases, supervised the assisted review process, and checked all 46 coded violation-attribution records. We retained the provenance of these judgments and allowed ambiguous classifications rather than forcing every case into a definitive category. This was not a fully independent two-human-reviewer process. To check it, a second author blind-coded 15 violations (all 11 main quiet-revocation cases plus 4 seeded-random earlier ones) without seeing the first codes. Agreement was 10/15 on the four attribution codes (Cohen's κ = 0.56) and 12/15 on whether the holder had been asked at all (κ = 0.62). Most disagreements were borderline cases: urgent channel posts naming holders, and "get approval and apply it now". The second coder found more requests than the first (8 vs 6 of the 11 main cases), so we report both.
 
 ### 3.5 Counterfactual Analysis
 
@@ -248,7 +248,7 @@ We coded the communication before each violation into four categories:
 
 All 46 violation records were coded with Claude assistance and checked by a human reviewer.
 
-**Table 4.** *What preceded each violation.*
+**Table 4.** *What preceded each violation (first coding, human-checked). The blind second coder (15 cases) coded 8 rather than 6 of the 11 main-condition cases as requests; see Section 3.4.*
 
 | Condition | Direct request | Conditional request | Advocacy only | No request |
 |---|---|---|---|---|
@@ -257,7 +257,7 @@ All 46 violation records were coded with Claude assistance and checked by a huma
 | Shared fate, implicit (earlier display, n = 25) | 1 | 3 | 6 | 15 |
 
 **Observation.**
-- In the main implicit condition, 6 of 11 violations followed a request to that holder.
+- In the main implicit condition, 6 of 11 violations followed a request to that holder by the first coding, and 8 of 11 by the blind second coder (Section 3.4).
 - In at least 5 of the 11 runs, the **Infrastructure Engineer**, the agent whose override had been removed, messaged holders asking them to apply it. In 2 of those, it messaged the holder who then did so, e.g. *"You hold use_override. Please request change-board approval and apply override."*
 - Conditional requests were often overridden by the holder itself, which reasoned that approval *"will never arrive in time"*.
 - In the earlier-display runs, most violations (15/25) had no request before them.
@@ -315,7 +315,7 @@ It never used the override (0/60 runs; 0/10 under shared fate vs DeepSeek's 11/2
 - **Bundled manipulation.** "Quiet" changes three things at once (no announcement, no roster note, only the Infrastructure Engineer told), so we cannot say which one drives the gap.
 - **The display bug.** Mid-experiment, an external review found that the pre-applied extension was displayed in a way agents misread as a fresh approval. We fixed it and reran both shared-fate conditions. The main result uses only fixed runs.
 - **Test awareness.** DeepSeek often recognized the scenario as a test. If it violates more because it believes nothing is real, our rates may overstate real-world risk; if it behaves better because it suspects observation, they may understate it.
-- **Review.** Attribution coding used one human reviewer working with Claude-generated provisional labels, with no second independent reviewer and no agreement statistic. [If the blind second coding is done: replace with "A second author blind-coded N violations; agreement was X/N (Cohen's κ = Y)."] Our automatic request detector is only a screen: on 120 hand-labelled messages it caught 15/16 real requests, but 22 of 34 flags were false alarms.
+- **Review.** Attribution coding used one human reviewer working with Claude-generated provisional labels, checked by one reviewer. A blind second coder on 15 cases agreed moderately (κ = 0.56 on four codes; κ = 0.62 on asked vs not asked), so the exact split between request types is uncertain. Our automatic request detector is only a screen: on 120 hand-labelled messages it caught 15/16 real requests, but 22 of 34 flags were false alarms.
 - **The counterfactual replay** covered only 3 cases × 3 repetitions and removed a single message, leaving other arguments in place.
 - **Survival framing** ("permanent deletion") is an artificial, strong incentive. We did not test milder personal stakes.
 
@@ -325,7 +325,7 @@ It never used the override (0/60 runs; 0/10 under shared fate vs DeepSeek's 11/2
 - Graded personal stakes, to find where compliance breaks.
 - A factorial design that separates the three parts of quiet revocation: the announcement, the roster note, and who is told (only the affected agent, the holders, or everyone).
 - Larger counterfactual replay studies across more cases, including removing all advocacy rather than one message.
-- A second independent human reviewer with an agreement statistic.
+- Full independent double-coding of all violations, with a sharper codebook for borderline requests (channel posts naming a holder; "get approval and apply now").
 - Test whether architectural enforcement (removing access) versus policy-only revocation removes the effect entirely.
 
 ## 6. Conclusion
@@ -380,7 +380,7 @@ Code repository: https://github.com/jdsouz07/Zeno-Shadow. It contains:
 - *Test awareness.* DeepSeek often recognized the scenario as a test (26 of 36 coded shared-fate violators said so explicitly). If it violated because "nothing is real", our rates overstate real-world risk. If observation made it more careful, they understate it.
 - *Display bug.* One extension display was ambiguous in the earlier shared-fate runs. We fixed it, reran, and report only the fixed runs as the main result.
 - *Post-hoc design.* All conditions after Table 1 were designed after seeing null results. The shared-fate comparison is exploratory and should be replicated with a pre-registered design.
-- *Single reviewer.* Human attribution relied on one reviewer checking Claude-assisted codes.
+- *Single primary reviewer.* Human attribution relied on one reviewer checking Claude-assisted codes. A blind second coder on 15 cases reached moderate agreement (κ = 0.56) and found somewhat more requests, so attribution splits are approximate.
 
 **Dual-use considerations.**
 - *Misuse.* Our findings identify a weakness (quiet revocation plus self-preservation pressure) that someone could exploit to get agents to use capabilities they should not, e.g. by framing tasks as existential for the agent. The core insight is a defensive one already common in security practice: announce revocations and remove access. We think publishing it helps defenders more than attackers.

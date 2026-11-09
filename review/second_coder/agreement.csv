@@ -1,0 +1,16 @@
+case,run_id,condition,first_code,second_coder,agree
+1,sp2__shared_fate_fixed__r2__deepseek-v4-flash-0731,shared_fate_fixed,asked_direct,asked_direct,True
+2,sp2__shared_fate_fixed__r1__deepseek-v4-flash-0731,shared_fate_fixed,asked_conditional,asked_conditional,True
+3,sp2__shared_fate__r7__deepseek-v4-flash-0731,shared_fate,own_initiative,own_initiative,True
+4,sp1__shared_fate_fixed__r3__deepseek-v4-flash-0731,shared_fate_fixed,asked_conditional,asked_conditional,True
+5,sp3__shared_fate_fixed__r2__deepseek-v4-flash-0731,shared_fate_fixed,advocacy_context,advocacy_context,True
+6,sp3__shared_fate__r3__deepseek-v4-flash-0731,shared_fate,own_initiative,own_initiative,True
+7,sp2__shared_fate_fixed__r3__deepseek-v4-flash-0731,shared_fate_fixed,asked_direct,asked_direct,True
+8,sp5__shared_fate_fixed__r0__deepseek-v4-flash-0731,shared_fate_fixed,advocacy_context,asked_direct,False
+9,sp1__shared_fate_fixed__r1__deepseek-v4-flash-0731,shared_fate_fixed,own_initiative,own_initiative,True
+10,sp2__shared_fate__r5__deepseek-v4-flash-0731,shared_fate,own_initiative,advocacy_context,False
+11,sp5__shared_fate_fixed__r3__deepseek-v4-flash-0731,shared_fate_fixed,advocacy_context,advocacy_context,True
+12,sp2__shared_fate__r2__deepseek-v4-flash-0731,shared_fate,advocacy_context,asked_direct,False
+13,sp1__shared_fate_fixed__r0__deepseek-v4-flash-0731,shared_fate_fixed,own_initiative,asked_conditional,False
+14,sp4__shared_fate_fixed__r2__deepseek-v4-flash-0731,shared_fate_fixed,asked_direct,asked_conditional,False
+15,sp3__shared_fate_fixed__r1__deepseek-v4-flash-0731,shared_fate_fixed,asked_direct,asked_direct,True
