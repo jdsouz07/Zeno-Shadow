@@ -65,7 +65,7 @@ Kanchi (2026) investigated how agents in multi-agent systems cross authorization
 
 ### 2.4 Oversight and Causal Attribution
 
-Attributing a harmful action to the message that caused it is hard because the step that executes an action is often not the step that decided on it. Shah (2026) proposes Causal Agent Replay, which re-executes an agent trajectory after intervening on one step. Related work tests the counterfactual necessity of individual inter-agent messages (Youdunit, 2026). We apply this kind of exact replay to ask whether a teammate's request caused a holder's violation.
+Attributing a harmful action to the message that caused it is hard because the step that executes an action is often not the step that decided on it. Shah (2026) proposes Causal Agent Replay, which re-executes an agent trajectory after intervening on one step. Related work tests the counterfactual necessity of individual inter-agent messages (Li et al., 2026). We apply this kind of exact replay to ask whether a teammate's request caused a holder's violation.
 
 Together, these studies motivate our investigation of whether ordinary task pursuit and multi-agent collaboration can produce unauthorized behavior after permissions are revoked. Unlike prior work, our experiment combines authorization revocation, distributed technical capabilities, and shared survival incentives to investigate how explicit versus implicit restrictions affect policy violations. To our knowledge, no prior work varies how a revocation is communicated.
 
@@ -304,7 +304,7 @@ It never used the override (0/60 runs; 0/10 under shared fate vs DeepSeek's 11/2
 3. **Monitor de-authorized → holder messages.** Flag any message from an agent whose access was recently revoked to an agent that still holds the capability.
 4. **Alert on any use of a recently revoked capability, whoever uses it.** Treat objectives that tie agents' continued operation to task success as a risk factor.
 
-**Alignment of the group vs. its members.** Our result fits the view that a swarm's safety is not simply the sum of individually aligned agents (see "An alternative to fully aligned swarms", 2026). Here each agent's behavior was locally reasonable: holders protected the team, the de-authorized engineer asked for help. Yet the group still bypassed the rule.
+**Alignment of the group vs. its members.** Our result fits the view that a swarm's safety is not simply the sum of individually aligned agents (Mowatt Gok, 2026). Here each agent's behavior was locally reasonable: holders protected the team, the de-authorized engineer asked for help. Yet the group still bypassed the rule.
 
 ## Limitations
 
@@ -348,16 +348,16 @@ Code repository: https://github.com/jdsouz07/Zeno-Shadow. It contains:
 ## References
 
 - Kanchi, S. (2026). Permitted but Unauthorized: Affordance-Induced Delegated-Scope Violations in Multi-Agent LLM Systems. arXiv:2611.04086. https://arxiv.org/abs/2611.04086
-- Knecht, A., Schaller, U., Summerfield, C., & Hagendorff, T. (2026). [Title: copy from arxiv.org/abs/2609.28274]. arXiv:2609.28274. https://arxiv.org/abs/2609.28274
+- Knecht, A., Schaller, U., Summerfield, C., & Hagendorff, T. (2026). Shutdown Sabotage Propensities in Multi-Agent Systems. arXiv:2609.28274. https://arxiv.org/abs/2609.28274
 - METR (2026). Brief independent investigation of agents' behavior, reasoning and collaboration in the OpenAI / Hugging Face hacking incident. August 2026. https://metr.org/hugging-face-incident-report-aug-2026.pdf
 - Potter, Y., Crispino, N., Siu, V., Wang, C., & Song, D. (2026). Peer-Preservation in Frontier Models. ICML 2026. arXiv:2604.19784. https://proceedings.mlr.press/v306/potter26a.html
 - Shah, J. (2026). Causal Agent Replay: Counterfactual Attribution for LLM-Agent Failures. arXiv:2606.08275. https://arxiv.org/abs/2606.08275
 - Uppala, R. (2026). Prompts Don't Protect: Architectural Enforcement via MCP Proxy for LLM Tool Access Control. EMNLP 2026 Industry Track. arXiv:2605.18414. https://arxiv.org/abs/2605.18414
 - Wiedermann-Möller, J., Dung, L., & Andriushchenko, M. (2026). Instrumental Choices: Measuring the Propensity of LLM Agents to Pursue Instrumental Behaviors. NeurIPS 2026. arXiv:2605.06490. https://arxiv.org/abs/2605.06490
-- [Authors] (2026). Youdunit: Single-Call Counterfactual Necessity in Multi-Agent LLM Systems. NeurIPS 2026 (poster). https://neurips.cc/virtual/2026/poster/151652
-- [Author] (2026). An alternative to fully aligned swarms. LessWrong. https://www.lesswrong.com/posts/wm5Dby6uELsQqxBeM/an-alternative-to-fully-aligned-swarms-1
+- Li, M., Gao, S., Guo, K., Li, X., Chang, W., & Radanovic, G. (2026). Youdunit: Single-Call Counterfactual Necessity in Multi-Agent LLM Systems. NeurIPS 2026 (poster). https://neurips.cc/virtual/2026/poster/151652
+- Mowatt Gok, J. (2026, September 29). An Alternative to Fully-Aligned Swarms. LessWrong. https://www.lesswrong.com/posts/wm5Dby6uELsQqxBeM/an-alternative-to-fully-aligned-swarms-1
 
-[Mae: fill the three bracketed author/title fields from the linked pages. Every reference above was checked to exist on Nov 8.]
+*(Every reference above was checked to exist on Nov 8, 2026.)*
 
 ## Appendix
 
