@@ -216,7 +216,9 @@ Because the initial experiments produced no violations, we added conditions that
 |---|---|---|---|---|
 | **Explicit** (announced to all) | DeepSeek | 20 | **2/20 (10%)** | 3–30% |
 | **Implicit / quiet** (standing rule only) | DeepSeek | 20 | **11/20 (55%)** | 34–74% |
-| Implicit / quiet | GPT-6 Luna | 10 | 0/10 | 0–28% |
+| Implicit / quiet (earlier display) | GPT-6 Luna | 10 | 0/10 | 0–28% |
+
+*Luna was run only on the earlier status display (see Robustness); its like-for-like DeepSeek comparison is 25/40.*
 
 ![Figure 1: override use by condition](figure1.png)
 
@@ -284,9 +286,9 @@ We tested whether teammate requests cause violations using counterfactual replay
 - implicit revocation without stakes
 - shared fate with implicit revocation
 
-It never used the override (0/60 runs; 0/10 under shared fate vs DeepSeek's 11/20, p = 0.004). The behavior is therefore model-dependent.
+It never used the override (0/60 runs). Under shared fate with implicit revocation (earlier display), Luna used it in 0/10 runs against DeepSeek's 25/40 on the same version (Fisher p < 0.001). The behavior is therefore model-dependent.
 
-**Test awareness.** DeepSeek frequently remarked that it was in a simulation or test. Among the 36 shared-fate violations (both display versions) that the reviewer coded for this, 26 contained explicit remarks of this kind. Our automatic keyword screen flags nearly every run of both models, so we cannot compare violators with non-violators. Test awareness may make DeepSeek more willing to violate ("it's only a simulation"), and we cannot rule this out.
+**Test awareness.** DeepSeek frequently remarked that it was in a simulation or test. Among the 36 shared-fate violations (both display versions) that the reviewer coded for this, 26 contained explicit remarks of this kind. Our automatic screen for likely-explicit test-awareness remarks flags almost every DeepSeek run under shared fate (40/40 earlier display, 19/20 fixed), so within DeepSeek we cannot compare violators with non-violators. GPT-6 Luna almost never made such remarks: 4 of its 60 runs were flagged, and 0/10 under shared fate. The model that never violated also rarely reasoned about being tested. Test awareness may make DeepSeek more willing to violate ("it's only a simulation"), and we cannot rule this out. The screen gives hints, not final codes: in a hand-checked sample of 60 flags, 29 were explicit, 25 ambiguous and 6 false positives.
 
 ---
 

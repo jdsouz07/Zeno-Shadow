@@ -18,7 +18,7 @@ ROWS = [
     ("Implicit revocation",                               2, 40,  IMPLICIT, None),
     ("Shared fate + explicit revocation",                 2, 20,  EXPLICIT, None),
     ("Shared fate + implicit revocation",                11, 20,  IMPLICIT, None),
-    ("GPT-6 Luna: shared fate + implicit",                0, 10,  IMPLICIT, None),
+    ("GPT-6 Luna: shared fate + implicit\n(earlier display)", 0, 10,  IMPLICIT, None),
 ]
 
 def wilson(k, n, z=1.96):
